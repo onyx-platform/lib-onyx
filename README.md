@@ -2,6 +2,14 @@
 
 An Onyx library with a collection of functions and idioms that are useful for batch and streaming workflows.
 
+## Installation
+
+Available on Clojars:
+
+```
+[com.mdrogalis/onyx "0.4.0-SNAPSHOT"]
+```
+
 ## Usage
 
 ### In Memory Joins
