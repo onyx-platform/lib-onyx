@@ -99,7 +99,8 @@
     :onyx/type :function
     :onyx/consumption :concurrent
     :lib-onyx.join/by :id
-    :onyx/batch-size batch-size}
+    :onyx/batch-size batch-size
+    :onyx/doc "Performs an in-memory streaming join on segments with a common key"}
 
    {:onyx/name :out
     :onyx/ident :hornetq/write-segments
