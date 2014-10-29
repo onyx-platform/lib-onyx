@@ -1,21 +1,27 @@
-(ns lib-onyx.retry-test
+(ns lib-onyx.interval-test
   (:require [clojure.core.async :refer [chan >!! <!! close!]]
             [onyx.peer.task-lifecycle-extensions :as l-ext]
             [onyx.peer.pipeline-extensions :as p-ext]
             [onyx.extensions :as extensions]
             [onyx.plugin.core-async]
             [onyx.api]
-            [lib-onyx.retry :as retry]))
+            [lib-onyx.interval]))
 
-(defn exciting-name-impl [{:keys [name] :as segment}]
-  (when (.startsWith name "X")
-    (throw (ex-info "Name started with X" {:reason :x-name :segment segment})))
-  {:name (str name "!")})
+(defn only-even-numbers [local-state {:keys [n] :as segment}]
+  (Thread/sleep 50)
+  (if (even? n)
+    segment
+    (do (swap! local-state conj segment)
+        [])))
 
-(defn exciting-name [produce-f segment]
-  (retry/retry-on-failure exciting-name-impl produce-f segment))
+(defn log-and-purge [{:keys [interval-test/state]}]
+  (prn "State is: " @state)
+  (prn "Flushing local state")
+  (reset! state []))
 
-(def workflow {:in {:exciting-name :out}})
+(def workflow
+  [[:in :capitalize-names]
+   [:capitalize-names :out]])
 
 (def capacity 1000)
 
@@ -26,10 +32,16 @@
 (defmethod l-ext/inject-lifecycle-resources :in
   [_ _] {:core-async/in-chan input-chan})
 
+(defmethod l-ext/inject-lifecycle-resources :capitalize-names
+  [_ _]
+  (let [state (atom [])]
+    {:onyx.core/params [state]
+     :interval-test/state state}))
+
 (defmethod l-ext/inject-lifecycle-resources :out
   [_ _] {:core-async/out-chan output-chan})
 
-(def batch-size 10)
+(def batch-size 1)
 
 (def catalog
   [{:onyx/name :in
@@ -40,14 +52,15 @@
     :onyx/batch-size batch-size
     :onyx/doc "Reads segments from a core.async channel"}
 
-   {:onyx/name :exciting-name
-    :onyx/ident :lib-onyx.join/requeue-and-retry
-    :onyx/fn :lib-onyx.retry-test/exciting-name
+   {:onyx/name :capitalize-names
+    :onyx/ident :lib-onyx.interval/recurring-action
+    :onyx/fn :lib-onyx.interval-test/only-even-numbers
     :onyx/type :function
     :onyx/consumption :concurrent
-    :lib-onyx.retry/n 3
+    :lib-onyx.interval/fn :lib-onyx.interval-test/log-and-purge
+    :lib-onyx.interval/ms 300
     :onyx/batch-size batch-size
-    :onyx/doc "Requeues segments that throw exceptions, at most :lib-onyx.retry/n times"}
+    :onyx/doc "Calls function :lib-onyx.interval/fn every :lib-onyx.interval/ms milliseconds with the pipeline map"}
 
    {:onyx/name :out
     :onyx/ident :core.async/write-to-chan
@@ -58,11 +71,7 @@
     :onyx/doc "Writes segments to a core.async channel"}])
 
 (def input-segments
-  [{:name "Mike"}
-   {:name "Xiu"}
-   {:name "Phil"}
-   {:name "Julia"}
-   :done])
+  (conj (mapv (fn [n] {:n n}) (range 50)) :done))
 
 (doseq [segment input-segments]
   (>!! input-chan segment))
@@ -93,8 +102,6 @@
 (onyx.api/submit-job conn {:catalog catalog :workflow workflow})
 
 (def results (onyx.plugin.core-async/take-segments! output-chan))
-
-(clojure.pprint/pprint results)
 
 (doseq [v-peer v-peers]
   ((:shutdown-fn v-peer)))
