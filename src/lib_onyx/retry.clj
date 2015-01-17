@@ -1,5 +1,5 @@
 (ns lib-onyx.retry
-  (:require [onyx.coordinator.planning :refer [find-task]]
+  (:require [onyx.planning :refer [find-task]]
             [onyx.peer.pipeline-extensions :as p-ext]
             [onyx.peer.task-lifecycle-extensions :as l-ext]
             [onyx.peer.operation :as operation]

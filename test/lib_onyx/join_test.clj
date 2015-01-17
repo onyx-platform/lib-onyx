@@ -11,7 +11,7 @@
 
 (def echo 1)
 
-(def id (str (java.util.UUID/randomUUID)))
+(def id (java.util.UUID/randomUUID))
 
 (def name-queue (str (java.util.UUID/randomUUID)))
 
@@ -22,7 +22,9 @@
 (def hq-config {"host" (:host (:non-clustered (:hornetq config)))
                 "port" (:port (:non-clustered (:hornetq config)))})
 
-(def coord-opts
+(def scheduler :onyx.job-scheduler/round-robin)
+
+(def env-config
   {:hornetq/mode :udp
    :hornetq/server? true
    :hornetq.udp/cluster-name (:cluster-name (:hornetq config))
@@ -36,9 +38,9 @@
    :zookeeper/server? true
    :zookeeper.server/port (:spawn-port (:zookeeper config))
    :onyx/id id
-   :onyx.coordinator/revoke-delay 5000})
+   :onyx.peer/job-scheduler scheduler})
 
-(def peer-opts
+(def peer-config
   {:hornetq/mode :udp
    :hornetq.udp/cluster-name (:cluster-name (:hornetq config))
    :hornetq.udp/group-address (:group-address (:hornetq config))
@@ -46,9 +48,10 @@
    :hornetq.udp/refresh-timeout (:refresh-timeout (:hornetq config))
    :hornetq.udp/discovery-timeout (:discovery-timeout (:hornetq config))
    :zookeeper/address (:address (:zookeeper config))
-   :onyx/id id})
+   :onyx/id id
+   :onyx.peer/job-scheduler scheduler})
 
-(def conn (onyx.api/connect :memory coord-opts))
+(def env (onyx.api/start-env env-config))
 
 (hq-util/create-queue! hq-config name-queue)
 
@@ -117,20 +120,18 @@
    [:ages :join-segments]
    [:join-segments :out]])
 
-(def v-peers (onyx.api/start-peers conn 4 peer-opts))
+(def v-peers (onyx.api/start-peers! 4 peer-config))
 
-(onyx.api/submit-job conn {:catalog catalog :workflow workflow})
+(onyx.api/submit-job peer-config
+                     {:catalog catalog :workflow workflow
+                      :task-scheduler :onyx.task-scheduler/round-robin})
 
 (def results (hq-util/consume-queue! hq-config out-queue echo))
 
 (doseq [v-peer v-peers]
-  (try
-    ((:shutdown-fn v-peer))
-    (catch Exception e (prn e))))
+  (onyx.api/shutdown-peer v-peer))
 
-(try
-  (onyx.api/shutdown conn)
-  (catch Exception e (prn e)))
+(onyx.api/shutdown-env env)
 
 (fact (into #{} (butlast results)) => (into #{} people))
 

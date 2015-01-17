@@ -1,6 +1,6 @@
 (ns lib-onyx.interval
   (:require [clojure.core.async :refer [chan timeout thread alts!! close!]]
-            [onyx.coordinator.planning :refer [find-task]]
+            [onyx.planning :refer [find-task]]
             [onyx.peer.task-lifecycle-extensions :as l-ext]
             [taoensso.timbre :refer [fatal]]))
 

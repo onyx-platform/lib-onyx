@@ -1,5 +1,5 @@
 (ns lib-onyx.join
-  (:require [onyx.coordinator.planning :refer [find-task]]
+  (:require [onyx.planning :refer [find-task]]
             [onyx.peer.task-lifecycle-extensions :as l-ext]))
 
 (defmethod l-ext/inject-lifecycle-resources :lib-onyx.join/join-segments
