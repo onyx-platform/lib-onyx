@@ -13,7 +13,7 @@ Support for:
 Available on Clojars:
 
 ```
-[com.mdrogalis/onyx "0.4.1"]
+[com.mdrogalis/lib-onyx "0.5.0"]
 ```
 
 ## Usage
