@@ -20,7 +20,7 @@ Available on Clojars:
 
 ### In Memory Joins
 
-Performs a streaming join on a sequence of a segments. Uses an atom that maintains a hashmap to retain unmatched values, and emits segments with `:lib-onyx.join/by` keyword in common.
+Performs a streaming join on a sequence of a segments. Uses an atom that maintains a hashmap to retain unmatched values, and emits segments with `:lib-onyx.join/by` keyword in common. Implictly performs an `:onyx/group-by-key` on the join key.
 
 #### Catalog Entry
 
