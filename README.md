@@ -1,5 +1,7 @@
 # lib-onyx
 
+**lib-onyx is not under active development, and is based on a very old version of Onyx. We'll get back to it at some point.**
+
 An Onyx library with a collection of functions and idioms that are useful for batch and streaming workflows.
 
 Support for:
