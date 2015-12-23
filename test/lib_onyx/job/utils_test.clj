@@ -80,6 +80,3 @@
                       :onyx/min-peers 2}]
                     [[:in :out]])
            12))))
-
-
-

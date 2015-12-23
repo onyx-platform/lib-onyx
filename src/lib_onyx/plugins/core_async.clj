@@ -1,6 +1,6 @@
 (ns lib-onyx.plugins.core-async
   (:require [clojure.core.async :refer [chan sliding-buffer >!!]]
-            [lib-onyx.job.utils :refer [find-task-by-key add-to-job]]))
+            [lib-onyx.job.utils :refer [find-task-by-key add-to-job instrument-plugin-lifecycles]]))
 
 (defonce channels (atom {}))
 
@@ -41,9 +41,9 @@
   (let [inputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/input))
         outputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/output))]
     {inputs  (get-input-channel (:core.async/id
-                                  (first (filter #(= inputs (:lifecycle/task %)) lifecycles))))
+                                 (first (filter #(= inputs (:lifecycle/task %)) lifecycles))))
      outputs (get-output-channel (:core.async/id
-                                   (first (filter #(= outputs (:lifecycle/task %)) lifecycles))))}))
+                                  (first (filter #(= outputs (:lifecycle/task %)) lifecycles))))}))
 
 (defn add-core-async
   "Instrument a lifecycle with serializeable references to core.async channels
@@ -59,24 +59,14 @@
    manually by passing it's reference directly to get-channel or by using one
    of the convinience functions in this namespace.
    "
-  [{:keys [catalog lifecycles] :as job}]
-  (assert (and (sequential? catalog) (sequential? lifecycles)))
-  (let [inputs (find-task-by-key catalog :onyx/plugin
-                                 :onyx.plugin.core-async/input)
-        outputs (find-task-by-key catalog :onyx/plugin
-                                  :onyx.plugin.core-async/output)]
-    (add-to-job job
-                {:lifecycles
-                 (mapcat #(remove nil? %)
-                         [(when-let [input-task-name (get inputs :onyx/name)]
-                            [{:lifecycle/task  input-task-name
-                              :lifecycle/calls ::in-calls
-                              :core.async/id   (java.util.UUID/randomUUID)}
-                             {:lifecycle/task  input-task-name
-                              :lifecycle/calls :onyx.plugin.core-async/reader-calls}])
-                          (when-let [output-task-name (get outputs :onyx/name)]
-                            [{:lifecycle/task  output-task-name
-                              :lifecycle/calls ::out-calls
-                              :core.async/id   (java.util.UUID/randomUUID)}
-                             {:lifecycle/task  output-task-name
-                              :lifecycle/calls :onyx.plugin.core-async/writer-calls}])])})))
+  [job]
+  (instrument-plugin-lifecycles
+   job
+   :onyx.plugin.core-async/input
+   :onyx.plugin.core-async/output
+   [{:lifecycle/calls ::in-calls
+     :core.async/id   (java.util.UUID/randomUUID)}
+    {:lifecycle/calls :onyx.plugin.core-async/reader-calls}]
+   [{:lifecycle/calls ::out-calls
+     :core.async/id   (java.util.UUID/randomUUID)}
+    {:lifecycle/calls :onyx.plugin.core-async/writer-calls}]))
