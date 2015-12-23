@@ -1,0 +1,7 @@
+test:
+  override:
+    - lein test
+
+machine:
+  java:
+    version: oraclejdk8
