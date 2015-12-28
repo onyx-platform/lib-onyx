@@ -22,7 +22,8 @@
 
 
 (deftest add-core-async-test
-  (let [instr-job (add-core-async sample-job)]
+  (let [instr-job (add-core-async sample-job)
+        instr-job-chan-size (add-core-async sample-job 1000)]
     (testing "that we can add core.async references to read-segments and write-segments"
       (is (every? true? (reduce (fn [acc lc]
                                   (if (and (or (= (:lifecycle/task lc) :read-segments)
@@ -32,4 +33,6 @@
                                     acc)) [] (:lifecycles instr-job)))))
     (testing "that we can resolve them to distinct channels"
       (is (every? nil? (map clojure.core.async/close!
-                        (vals (get-core-async-channels instr-job))))))))
+                            (vals (get-core-async-channels instr-job)))))
+      (is (every? nil? (map clojure.core.async/close!
+                            (vals (get-core-async-channels instr-job-chan-size))))))))

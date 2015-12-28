@@ -11,21 +11,21 @@
         ch)))
 
 (defn get-input-channel
-  ([id] (get-input-channel id 1000))
-  ([id size]
-   (get-channel id size)))
+  [id size]
+  (get-channel id size))
 
 (defn get-output-channel
-  ([id] (get-output-channel id 1001))
-  ([id size]
-   (get-channel id size)))
+  [id size]
+  (get-channel id size))
 
 (defn inject-in-ch
   [_ lifecycle]
-  {:core.async/chan (get-input-channel (:core.async/id lifecycle))})
+  {:core.async/chan (get-input-channel (:core.async/id lifecycle)
+                                       (:core.async/size lifecycle))})
 (defn inject-out-ch
   [_ lifecycle]
-  {:core.async/chan (get-output-channel (:core.async/id lifecycle))})
+  {:core.async/chan (get-output-channel (:core.async/id lifecycle)
+                                        (:core.async/size lifecycle))})
 (def in-calls
   {:lifecycle/before-task-start inject-in-ch})
 (def out-calls
@@ -41,9 +41,9 @@
   (let [inputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/input))
         outputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/output))]
     {inputs  (get-input-channel (:core.async/id
-                                 (first (filter #(= inputs (:lifecycle/task %)) lifecycles))))
+                                 (first (filter #(= inputs (:lifecycle/task %)) lifecycles))) nil)
      outputs (get-output-channel (:core.async/id
-                                  (first (filter #(= outputs (:lifecycle/task %)) lifecycles))))}))
+                                  (first (filter #(= outputs (:lifecycle/task %)) lifecycles))) nil)}))
 
 (defn add-core-async
   "Instrument a lifecycle with serializeable references to core.async channels
@@ -59,14 +59,17 @@
    manually by passing it's reference directly to get-channel or by using one
    of the convinience functions in this namespace.
    "
-  [job]
-  (instrument-plugin-lifecycles
-   job
-   :onyx.plugin.core-async/input
-   :onyx.plugin.core-async/output
-   [{:lifecycle/calls ::in-calls
-     :core.async/id   (java.util.UUID/randomUUID)}
-    {:lifecycle/calls :onyx.plugin.core-async/reader-calls}]
-   [{:lifecycle/calls ::out-calls
-     :core.async/id   (java.util.UUID/randomUUID)}
-    {:lifecycle/calls :onyx.plugin.core-async/writer-calls}]))
+  ([job] (add-core-async job 1000))
+  ([job chan-size]
+   (instrument-plugin-lifecycles
+    job
+    :onyx.plugin.core-async/input
+    :onyx.plugin.core-async/output
+    [{:lifecycle/calls ::in-calls
+      :core.async/id   (java.util.UUID/randomUUID)
+      :core.async/size chan-size}
+     {:lifecycle/calls :onyx.plugin.core-async/reader-calls}]
+    [{:lifecycle/calls ::out-calls
+      :core.async/id   (java.util.UUID/randomUUID)
+      :core.async/size (inc chan-size)}
+     {:lifecycle/calls :onyx.plugin.core-async/writer-calls}])))
