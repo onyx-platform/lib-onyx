@@ -52,3 +52,12 @@
                           (when-let [output-task-name (get outputs :onyx/name)]
                             (mapv (partial merge {:lifecycle/task output-task-name})
                                   output-lifecycles))])})))
+
+(defn update-task
+  "Merges a map of opts into a catalog task"
+  [job task-name f]
+  (update-in job [:catalog]
+             (fn [catalog]
+               (let [task (find-task catalog task-name)]
+                 (replace
+                  {task (f task)} catalog)))))

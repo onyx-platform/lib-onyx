@@ -80,3 +80,32 @@
                       :onyx/min-peers 2}]
                     [[:in :out]])
            12))))
+
+
+(deftest instrument-plugin-lifecycles-test
+  (testing "that we can identify catalog entries that require lifecycle's, and add them"
+    (is (some #{{:lifecycle/task :out :bar :baz}
+                {:lifecycle/task :in  :foo :baz}}
+              (:lifecycles (instrument-plugin-lifecycles
+                            {:catalog [{:onyx/name :in
+                                        :onyx/plugin :input}
+                                       {:onyx/name :out
+                                        :onyx/plugin :output}]} :input :output
+                            [{:foo :bar}]
+                            [{:bar :baz}])))))
+  (testing "That we can add only one type, input or output, to the lifecycle"
+    (is (= '({:lifecycle/task :out :bar :baz})
+           (:lifecycles (instrument-plugin-lifecycles
+                         {:catalog [{:onyx/name :in
+                                     :onyx/plugin :input}
+                                    {:onyx/name :out
+                                     :onyx/plugin :output}]}
+                         nil :output
+                         nil [{:bar :baz}]))))))
+
+(deftest update-task-test
+  (testing "that we can add {:hello :world} to a task"
+    (is (:hello
+         (first (:catalog
+                 (update-task {:catalog [{:onyx/name :read-segments}]}
+                              :read-segments (fn [m] (merge {:hello :world} m)))))))))

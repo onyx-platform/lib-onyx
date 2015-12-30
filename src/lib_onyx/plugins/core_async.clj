@@ -45,8 +45,8 @@
      outputs (get-output-channel (:core.async/id
                                   (first (filter #(= outputs (:lifecycle/task %)) lifecycles))) nil)}))
 
-(defn add-core-async
-  "Instrument a lifecycle with serializeable references to core.async channels
+(defn add-core-async-lifecycles
+  "Instrument a jobs lifecycles with serializeable references to core.async channels
    in the form of UUID's.
    Each catalog entry that is a :onyx/plugin of type:
 
@@ -59,7 +59,7 @@
    manually by passing it's reference directly to get-channel or by using one
    of the convinience functions in this namespace.
    "
-  ([job] (add-core-async job 1000))
+  ([job] (add-core-async-lifecycles job 1000))
   ([job chan-size]
    (instrument-plugin-lifecycles
     job

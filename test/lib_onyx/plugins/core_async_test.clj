@@ -22,8 +22,8 @@
 
 
 (deftest add-core-async-test
-  (let [instr-job (add-core-async sample-job)
-        instr-job-chan-size (add-core-async sample-job 1000)]
+  (let [instr-job (add-core-async-lifecycles sample-job)
+        instr-job-chan-size (add-core-async-lifecycles sample-job 1000)]
     (testing "that we can add core.async references to read-segments and write-segments"
       (is (every? true? (reduce (fn [acc lc]
                                   (if (and (or (= (:lifecycle/task lc) :read-segments)
