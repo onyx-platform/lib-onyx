@@ -48,7 +48,7 @@
                  (mapcat #(remove nil? %)
                          [(when-let [input-task-name (get inputs :onyx/name)]
                             (mapv (partial merge {:lifecycle/task input-task-name})
-                                 input-lifecycles))
+                                  input-lifecycles))
                           (when-let [output-task-name (get outputs :onyx/name)]
                             (mapv (partial merge {:lifecycle/task output-task-name})
                                   output-lifecycles))])})))

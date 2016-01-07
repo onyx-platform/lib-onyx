@@ -6,6 +6,9 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/core.async "0.2.374"]
                  [com.taoensso/timbre "4.1.4"]
-                 [cheshire "5.5.0"]]
+                 [cheshire "5.5.0"]
+                 [ragtime "0.5.2"]
+                 [mysql/mysql-connector-java "5.1.6"]
+                 [com.rpl/specter "0.9.1"]]
   :profiles {:dev {:dependencies []
                    :plugins []}})
