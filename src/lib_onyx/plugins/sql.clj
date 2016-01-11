@@ -57,14 +57,14 @@
                 catalog :onyx/plugin :onyx.plugin.sql/write-rows)
         modfn       (fn [job catalog-entry]
                       (if (:sql/migrations catalog-entry)
-                        (add-to-job {:lifecycles [(merge (extract-db-spec catalog-entry)
-                                                         {:lifecycle/task (:onyx/name catalog-entry)
-                                                          :lifecycle/calls ::sql-migration-calls})]})
+                        (add-to-job
+                         job {:lifecycles [(merge (extract-db-spec catalog-entry) ;; Here you can configure
+                                                  {:lifecycle/task (:onyx/name catalog-entry)
+                                                   :lifecycle/calls ::sql-migration-calls})]})
                         job))]
-    (->
-     job
-     (modfn input)
-     (modfn output))))
+    (-> job
+        (modfn input)
+        (modfn output))))
 
 
 
@@ -74,11 +74,6 @@
   [job]
   )
 
-(def config
-  2)
-
-                                        ;(r/rollback config 1)
-                                        ;(r/migrate config)
 (comment
   (defn add-sql
     [{:keys [catalog lifecycles] :as job}]
