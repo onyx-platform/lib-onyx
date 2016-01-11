@@ -1,12 +1,21 @@
 (ns lib-onyx.normalize)
 
-(defn task-name
+(defn map-by-key [k xs]
+  (reduce (fn [acc item]
+            (assoc acc (k item) item)) {} xs))
+
+(defn task-by-name
   "Creates the :task/by-id entries in a catalog"
   [job]
   (let [catalog (get job :catalog)
-        tasks-by-name (reduce (fn [acc item]
-                                (assoc acc (:onyx/name item) item)) {} (:catalog job))]
+        tasks-by-name (map-by-key :onyx/name (:catalog job))]
     (assoc job :task/by-name tasks-by-name)))
+
+(defn lifecycles-by-name
+  [job]
+  (let [lifecycles (get job :lifecycles)
+        lifecycles-by-name (map-by-key :lifecycle/calls lifecycles)]
+    (assoc job :lifecycle/by-name lifecycles-by-name)))
 
 (def job
   {:catalog [{:onyx/name :read-lines

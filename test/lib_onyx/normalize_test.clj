@@ -22,7 +22,8 @@
                                 :lifecycles [[:lifecycles/by-name :verify-schema]]
                                 :windows []}}
 
-   :lifecycles/by-name {:add-logging {:lifecycle/task [[:task/by-name :read-lines :onyx/name]]
+   :lifecycles/by-name {:add-logging {:lifecycle/name :add-logging
+                                      :lifecycle/task [[:task/by-name :read-lines :onyx/name]]
                                       :lifecycle/calls :lib-onyx.plugins.logging/log-calls
                                       :lifecycle/doc "Add's logging to a task"}
 
@@ -50,6 +51,7 @@
               :onyx/doc "Do nothing with the segment"}]
 
    :lifecycles [{:lifecycle/task :read-lines
+                 :sample-param 1
                  :lifecycle/calls :lib-onyx.plugins.logging/log-calls
                  :lifecycle/doc "Add's logging to a task"}
 
@@ -63,9 +65,15 @@
    :workflow [[:read-lines :identity]
               [:identity :write-lines]]})
 
-(deftest associate-task-name-test
+(deftest task-by-name-test
   (testing "That a normlized catalog can be accessed"
     (is (= "migrations"
-           (get-in (task-name sample-job) [:task/by-name :read-lines :sql/migrations])))
+           (get-in (task-by-name sample-job) [:task/by-name :read-lines :sql/migrations])))
     (is (= :read-lines
-           (get-in (task-name sample-job) [:task/by-name :read-lines :onyx/name])))))
+           (get-in (task-by-name sample-job) [:task/by-name :read-lines :onyx/name])))))
+
+(deftest lifecycles-by-name-test
+  (testing "That lifecycles can be normalized"
+    (is (= 1
+           (get-in (lifecycles-by-name sample-job)
+                   [:lifecycle/by-name :lib-onyx.plugins.logging/log-calls :sample-param])))))
