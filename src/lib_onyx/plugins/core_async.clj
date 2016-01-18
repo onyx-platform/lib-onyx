@@ -1,6 +1,8 @@
 (ns lib-onyx.plugins.core-async
   (:require [clojure.core.async :refer [chan sliding-buffer >!!]]
-            [lib-onyx.job.utils :refer [find-task-by-key add-to-job instrument-plugin-lifecycles]]))
+            [lib-onyx.job.utils :refer [find-task-by-key add-to-job instrument-plugin-lifecycles
+                                        unit-lens]]
+            [traversy.lens :refer :all :rename {update lupdate}]))
 
 (defonce channels (atom {}))
 
@@ -59,17 +61,18 @@
    manually by passing it's reference directly to get-channel or by using one
    of the convinience functions in this namespace.
    "
-  ([job] (add-core-async-lifecycles job 1000))
-  ([job chan-size]
-   (instrument-plugin-lifecycles
-    job
-    :onyx.plugin.core-async/input
-    :onyx.plugin.core-async/output
-    [{:lifecycle/calls ::in-calls
-      :core.async/id   (java.util.UUID/randomUUID)
-      :core.async/size chan-size}
-     {:lifecycle/calls :onyx.plugin.core-async/reader-calls}]
-    [{:lifecycle/calls ::out-calls
-      :core.async/id   (java.util.UUID/randomUUID)
-      :core.async/size (inc chan-size)}
-     {:lifecycle/calls :onyx.plugin.core-async/writer-calls}])))
+  ([job task] (add-core-async-lifecycles job task 1000))
+  ([job task chan-size]
+   (if-let [entry (view-single job (*> (unit-lens [:catalog] :onyx/name task)
+                                       (conditionally :onyx/type)))]
+     (update-in job [:lifecycles] into (condp = (:onyx/type entry)
+                                         :input [{:lifecycle/task task
+                                                  :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+                                                 {:lifecycle/calls ::in-calls
+                                                  :core.async/id   (java.util.UUID/randomUUID)
+                                                  :core.async/size chan-size}]
+                                         :output [{:lifecycle/task task
+                                                   :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+                                                  {:lifecycle/calls ::out-calls
+                                                   :core.async/id   (java.util.UUID/randomUUID)
+                                                   :core.async/size (inc chan-size)}])))))

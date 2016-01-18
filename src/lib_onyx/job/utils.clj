@@ -63,7 +63,7 @@
                  (replace
                   {task (f task)} catalog)))))
 
-(defn module-lens
+(defn unit-lens
   "Constructs a lens designed for the Onyx job map layout to aid extracting
    a single entry.
    {:catalog [{...} {...}]

@@ -45,7 +45,7 @@
 
 (deftest add-kafka-to-task-test
   (testing "that we can add kafka ops to a task"
-    (= (first (:catalog (add-kafka-to-task sample-job :read-segments {:kafka/serializer-fn :json
+    (= (first (:catalog (add-kafka-catalog sample-job :read-segments {:kafka/serializer-fn :json
                                                                       :kafka/topic "mytopic"})))
        {:onyx/name :read-segments
         :onyx/plugin :onyx.plugin.kafka/read-messages

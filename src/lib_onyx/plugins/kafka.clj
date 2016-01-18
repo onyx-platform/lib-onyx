@@ -1,6 +1,6 @@
 (ns lib-onyx.plugins.kafka
   (:require [lib-onyx.job.utils :refer [add-to-job instrument-plugin-lifecycles
-                                        find-task update-task module-lens]]
+                                        find-task update-task unit-lens]]
             [cheshire.core :as json]
             [traversy.lens :refer :all :rename {update lupdate}]))
 
@@ -42,7 +42,7 @@
   "Add's read-messages-calls lifecycles for a Kafka task. If the task is not specified
    as an :input task in the catalog, throws an exception."
   [job task]
-  (if-let [entry (view-single job (*> (module-lens [:catalog] :onyx/name task)
+  (if-let [entry (view-single job (*> (unit-lens [:catalog] :onyx/name task)
                                       (conditionally :onyx/type)))]
     (update-in job [:lifecycles] conj (condp = (:onyx/type entry)
                                         :input {:lifecycle/task task
@@ -51,7 +51,7 @@
                                                  :lifecycle/calls :onyx.plugin.kafka/write-messages-calls}))
     (throw (java.lang.IllegalArgumentException "Catalog entry must specify :onyx/type"))))
 
-(defn add-kafka-to-task
+(defn add-kafka-catalog
   "Instrument a jobs catalog entry with Kafka options
   opts are of the following form for Kafka consumers AND producers
 
@@ -81,11 +81,11 @@
   :kafka/request-size
   "
   [job task opts] ;; TODO: Catch this assertion error
-  (if-let [entry (view-single job (*> (module-lens [:catalog] :onyx/name task)
+  (if-let [entry (view-single job (*> (unit-lens [:catalog] :onyx/name task)
                                       (conditionally (fn [foci]
                                                        (let [t (get foci :onyx/plugin)]
                                                          (or (= t :onyx.plugin.kafka/read-messages)
                                                              (= t :onyx.plugin.kafka/write-messages)))))))]
-    (lupdate job (module-lens [:catalog] :onyx/name task) (comp expand-deserializer-fn
+    (lupdate job (unit-lens [:catalog] :onyx/name task) (comp expand-deserializer-fn
                                                                 expand-serializer-fn))
     (throw (java.lang.IllegalArgumentException "Catalog entry must specify a Kafka plugin for :onyx/plugin"))))
