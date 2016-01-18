@@ -56,27 +56,29 @@
   opts are of the following form for Kafka consumers AND producers
 
   :kafka/topic               - Name of a topic
-  :kafka/partition           -- Optional: partition to read from if
+  :kafka/partition           - Optional: partition to read from if
                                  auto-assignment is not used
-  :kafka/group-id            -- The consumer identity to store in ZooKeeper
+  :kafka/group-id            - The consumer identity to store in ZooKeeper
   :kafka/zookeeper           - The ZooKeeper connection string
-  :kafka/offset-reset        -- Offset bound to seek to when not found
+  :kafka/offset-reset        - Offset bound to seek to when not found
                                  - :smallest or :largest
-  :kafka/force-reset?        -- Force to read from the beginning or end of the
+  :kafka/force-reset?        - Force to read from the beginning or end of the
                                  log, as specified by :kafka/offset-reset.
                                  If false, reads from the last acknowledged
                                  messsage if it exists
   :kafka/serializer-fn       - :json or :edn for default serializers, a
-                                custom fn can also be supplied
-  :kafka/deserializer-fn     -- :json or :edn for default deserializers, a
-                                custom fn can also be supplied
+                                custom fn can also be supplied. Only for
+                                :output tasks
+  :kafka/deserializer-fn     - :json or :edn for default deserializers, a
+                                custom fn can also be supplied. Only for
+                                :input tasks
 
   ========================== Optional Settings =================================
   :kafka/chan-capacity
   :kafka/fetch-size
   :kafka/empty-read-back-off
   :kafka/commit-interval
-  :kafka/request-size        -
+  :kafka/request-size
   "
   [job task opts] ;; TODO: Catch this assertion error
   (if-let [entry (view-single job (*> (module-lens [:catalog] :onyx/name task)
