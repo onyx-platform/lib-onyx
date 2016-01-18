@@ -1,6 +1,8 @@
 (ns lib-onyx.plugins.core-async-test
   (:require [lib-onyx.plugins.core-async :refer :all]
-            [clojure.test :refer [is deftest testing]])
+            [clojure.test :refer [is deftest testing]]
+            [lib-onyx.job.utils :refer [unit-lens]]
+            [traversy.lens :refer :all :rename {update lupdate}])
   (:import (java.util UUID)))
 
 (def sample-job
@@ -20,17 +22,18 @@
      :onyx/doc           "Writes segments to a core.async channel"}]
    :lifecycles [{:dont :touch}]})
 
-
-(deftest add-core-async-test
-  (let [instr-job (-> (add-core-async-lifecycles sample-job :read-segments)
-                      (add-core-async-lifecycles :write-segments))]
-    (testing "that we can add core.async references to read-segments and write-segments"
-      (is (every? true? (reduce (fn [acc lc]
-                                  (if (and (or (= (:lifecycle/task lc) :read-segments)
-                                               (= (:lifecycle/task lc) :write-segments))
-                                           (instance? UUID (:core.async/id lc)))
-                                    (conj acc true)
-                                    acc)) [] (:lifecycles instr-job)))))
-    (testing "that we can resolve them to distinct channels"
-      (is (every? nil? (map clojure.core.async/close!
-                            (vals (get-core-async-channels instr-job))))))))
+(deftest add-core-async-input-test
+  (let [instr-job (-> (add-core-async-input sample-job :read-segments)
+                      (add-core-async-output :write-segments))]
+    (testing "That we can add core.async references to read-segments, and get back a channel"
+      (let [uuid (first (view instr-job
+                              (*> (unit-lens [:lifecycles] :lifecycle/task :read-segments)
+                                  (in [:core.async/id])
+                                  maybe)))]
+        (is (instance? UUID uuid))
+        (is (get-input-channel uuid))))
+    (testing "that we can also retrieve a map of different channels"
+      (let [{:keys [read-segments write-segments]} (get-core-async-channels instr-job)]
+        (is (not (= read-segments write-segments)))
+        (is (not (nil? read-segments)))
+        (is (not (nil? write-segments)))))))

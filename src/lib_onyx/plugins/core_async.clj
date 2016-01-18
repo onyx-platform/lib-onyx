@@ -6,19 +6,21 @@
 
 (defonce channels (atom {}))
 
-(defn get-channel [id size]
+(defn- get-channel [id size]
   (or (get @channels id)
       (let [ch (chan size)]
         (swap! channels assoc id ch)
         ch)))
 
 (defn get-input-channel
-  [id size]
-  (get-channel id size))
+  ([id] (get-input-channel id nil))
+  ([id size]
+   (get-channel id size)))
 
 (defn get-output-channel
-  [id size]
-  (get-channel id size))
+  ([id] (get-output-channel id nil))
+  ([id size]
+   (get-channel id size)))
 
 (defn inject-in-ch
   [_ lifecycle]
@@ -39,40 +41,42 @@
 
   {:read-lines (chan...)
    :write-lines (chan...)}"
-  [{:keys [lifecycles catalog]}]
-  (let [inputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/input))
-        outputs (:onyx/name (find-task-by-key catalog :onyx/plugin :onyx.plugin.core-async/output))]
-    {inputs  (get-input-channel (:core.async/id
-                                 (first (filter #(= inputs (:lifecycle/task %)) lifecycles))) nil)
-     outputs (get-output-channel (:core.async/id
-                                  (first (filter #(= outputs (:lifecycle/task %)) lifecycles))) nil)}))
+  [job]
+  (let [chan-lifecycles (view job (*> (in [:lifecycles])
+                                      (only :core.async/id)))]
+    (reduce (fn [acc lf]
+              (assoc acc (:lifecycle/task lf) (get-output-channel (:core.async/id lf)))) {} chan-lifecycles)))
 
-(defn add-core-async-lifecycles
-  "Instrument a jobs lifecycles with serializeable references to core.async channels
+(defn add-core-async-input
+  "Instrument a task with serializeable references to core.async channels
    in the form of UUID's.
-   Each catalog entry that is a :onyx/plugin of type:
-
-     :onyx.plugin.core-async/input
-       or
-     :onyx.plugin.core-async/input
-
    Will have a reference to a channel contained in the channels atom above
    added under core.async/id. The corrosponding channel can be looked up
-   manually by passing it's reference directly to get-channel or by using one
-   of the convinience functions in this namespace.
-   "
-  ([job task] (add-core-async-lifecycles job task 1000))
+   manually by passing it's reference directly to get-channel or by using
+   get-core-async-channels."
+  ([job task] (add-core-async-input job task 1000))
   ([job task chan-size]
-   (if-let [entry (view-single job (*> (unit-lens [:catalog] :onyx/name task)
-                                       (conditionally :onyx/type)))]
-     (update-in job [:lifecycles] into (condp = (:onyx/type entry)
-                                         :input [{:lifecycle/task task
-                                                  :lifecycle/calls :onyx.plugin.core-async/reader-calls}
-                                                 {:lifecycle/calls ::in-calls
-                                                  :core.async/id   (java.util.UUID/randomUUID)
-                                                  :core.async/size chan-size}]
-                                         :output [{:lifecycle/task task
-                                                   :lifecycle/calls :onyx.plugin.core-async/reader-calls}
-                                                  {:lifecycle/calls ::out-calls
-                                                   :core.async/id   (java.util.UUID/randomUUID)
-                                                   :core.async/size (inc chan-size)}])))))
+   (if-let [entry (view-single job (unit-lens [:catalog] :onyx/name task))]
+     (update-in job [:lifecycles] into [{:lifecycle/task task
+                                         :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+                                        {:lifecycle/task task
+                                         :lifecycle/calls ::in-calls
+                                         :core.async/id   (java.util.UUID/randomUUID)
+                                         :core.async/size chan-size}]))))
+
+(defn add-core-async-output
+  "Instrument a task with serializeable references to core.async channels
+   in the form of UUID's.
+   Will have a reference to a channel contained in the channels atom above
+   added under core.async/id. The corrosponding channel can be looked up
+   manually by passing it's reference directly to get-channel or by using
+   get-core-async-channels."
+  ([job task] (add-core-async-output job task 1000))
+  ([job task chan-size]
+   (if-let [entry (view-single job (unit-lens [:catalog] :onyx/name task))]
+     (update-in job [:lifecycles] into [{:lifecycle/task task
+                                         :lifecycle/calls :onyx.plugin.core-async/reader-calls}
+                                        {:lifecycle/task task
+                                         :lifecycle/calls ::out-calls
+                                         :core.async/id   (java.util.UUID/randomUUID)
+                                         :core.async/size (inc chan-size)}]))))
