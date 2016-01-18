@@ -51,15 +51,16 @@
               :onyx/doc "Do nothing with the segment"}]
 
    :lifecycles [{:lifecycle/task :read-lines
-                 :sample-param 1
                  :lifecycle/calls :lib-onyx.plugins.logging/log-calls
                  :lifecycle/doc "Add's logging to a task"}
 
                 {:lifecycle/task :read-lines
+                 :sample-param 1
                  :lifecycle/calls :lib-onyx.plugins.sql/verify-schema
                  :lifecycle/doc "Applies sql migrations to a db"}
 
                 {:lifecycle/task :write-lines
+                 :sample-param 1
                  :lifecycle/calls :lib-onyx.plugins.sql/verify-schema
                  :lifecycle/doc "Applies sql migrations to a db"}]
    :workflow [[:read-lines :identity]
@@ -72,8 +73,10 @@
     (is (= :read-lines
            (get-in (task-by-name sample-job) [:task/by-name :read-lines :onyx/name])))))
 
-(deftest lifecycles-by-name-test
+(deftest lifecycles-by-hash-test
   (testing "That lifecycles can be normalized"
-    (is (= 1
-           (get-in (lifecycles-by-name sample-job)
-                   [:lifecycle/by-name :lib-onyx.plugins.logging/log-calls :sample-param])))))
+    (is (=
+         (get-in (lifecycles-by-hash {:lifecycles [{:lifecycle/task :read-lines :lifecycle/calls :somecalls}]})
+                 )))))
+
+;(clojure.pprint/pprint (:lifecycle/task-name-by-hash (lifecycles-by-hash sample-job)))

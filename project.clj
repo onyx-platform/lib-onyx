@@ -8,6 +8,7 @@
                  [com.taoensso/timbre "4.1.4"]
                  [cheshire "5.5.0"]
                  [ragtime "0.5.2"]
+                 [traversy "0.4.0"]
                  [mysql/mysql-connector-java "5.1.6"]
                  [com.rpl/specter "0.9.1"]]
   :profiles {:dev {:dependencies []

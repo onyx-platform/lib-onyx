@@ -11,11 +11,24 @@
         tasks-by-name (map-by-key :onyx/name (:catalog job))]
     (assoc job :task/by-name tasks-by-name)))
 
-(defn lifecycles-by-name
+(defn lifecycles-by-hash
   [job]
-  (let [lifecycles (get job :lifecycles)
-        lifecycles-by-name (map-by-key :lifecycle/calls lifecycles)]
-    (assoc job :lifecycle/by-name lifecycles-by-name)))
+  (let [task-name-hash     (atom {})
+        lifecycles         (get job :lifecycles)
+        hashed-lifecycles  (mapv
+                            (fn [m]
+                              (let [generic-map (dissoc m :lifecycle/task)
+                                    hashv       (hash generic-map)]
+                                (swap! task-name-hash
+                                       update hashv
+                                       (fn [records]
+                                         (vec (conj records (:lifecycle/task m)))))
+                                (assoc m ::hash (hash m))))
+                            lifecycles)
+        lifecycles-by-hashes (map-by-key ::hash hashed-lifecycles)]
+    (assoc job
+           :lifecycle/by-hash lifecycles-by-hashes
+           :lifecycle/task-name-by-hash @task-name-hash)))
 
 (def job
   {:catalog [{:onyx/name :read-lines

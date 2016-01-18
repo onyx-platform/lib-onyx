@@ -1,4 +1,5 @@
-(ns lib-onyx.job.utils)
+(ns lib-onyx.job.utils
+  (:require [traversy.lens :refer :all :rename {update lupdate}]))
 
 (defn find-task-by-key
   "Finds the catalog entry where the key correspond to the value
@@ -61,3 +62,16 @@
                (let [task (find-task catalog task-name)]
                  (replace
                   {task (f task)} catalog)))))
+
+(defn module-lens
+  "Constructs a lens designed for the Onyx job map layout to aid extracting
+   a single entry.
+   {:catalog [{...} {...}]
+    :lifecycles [{...} {...}]
+    ...}
+   Where section is one of [:catalog :lifecycles :workflows :flow-conditions :windows :triggers]
+   Where key and val are used to match a single entry"
+  [section key val]
+  (*>
+   (combine (in section) each)
+   (conditionally (fn [foci] (= val (get foci key))))))

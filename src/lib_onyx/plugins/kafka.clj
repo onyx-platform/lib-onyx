@@ -1,7 +1,8 @@
 (ns lib-onyx.plugins.kafka
   (:require [lib-onyx.job.utils :refer [add-to-job instrument-plugin-lifecycles
-                                        find-task update-task]]
-            [cheshire.core :as json]))
+                                        find-task update-task module-lens]]
+            [cheshire.core :as json]
+            [traversy.lens :refer :all :rename {update lupdate}]))
 
 (defn deserialize-message-json [bytes]
   (try
@@ -21,35 +22,34 @@
 (defn serialize-message-edn [segment]
   (.getBytes segment))
 
-
-(defn add-kafka-lifecycles
-  "Instruments a jobs lifecycles with kafka plugin reader and writer calls"
-  [job]
-  (instrument-plugin-lifecycles job
-                                :onyx.plugin.kafka/read-messages
-                                :onyx.plugin.kafka/write-messages
-                                [{:lifecycle/calls :onyx.plugin.kafka/read-messages-calls}]
-                                [{:lifecycle/calls :onyx.plugin.kafka/write-messages-calls}]))
-
-(defn get-serializer-fn [task]
+(defn expand-serializer-fn [task]
   (update-in task [:kafka/serializer-fn]
              (fn [v]
                (condp = v
                  :json    ::serialize-message-json
                  :edn     ::serialize-message-edn
-                 nil      (throw (java.lang.IllegalArgumentException.
-                                  ":kafka/serializer-fn not supplied"))
                  v))))
 
-(defn get-deserializer-fn [task]
+(defn expand-deserializer-fn [task]
   (update-in task [:kafka/deserializer-fn]
              (fn [v]
                (condp = v
                  :json    ::deserialize-message-json
                  :edn     ::deserialize-message-edn
-                 nil      (throw (java.lang.IllegalArgumentException.
-                                  ":kafka/deserializer-fn not supplied"))
                  v))))
+
+(defn add-kafka-lifecycles
+  "Add's read-messages-calls lifecycles for a Kafka task. If the task is not specified
+   as an :input task in the catalog, throws an exception."
+  [job task]
+  (if-let [entry (view-single job (*> (module-lens [:catalog] :onyx/name task)
+                                      (conditionally :onyx/type)))]
+    (update-in job [:lifecycles] conj (condp = (:onyx/type entry)
+                                        :input {:lifecycle/task task
+                                                :lifecycle/calls :onyx.plugin.kafka/read-messages-calls}
+                                        :output {:lifecycle/task task
+                                                 :lifecycle/calls :onyx.plugin.kafka/write-messages-calls}))
+    (throw (java.lang.IllegalArgumentException "Catalog entry must specify :onyx/type"))))
 
 (defn add-kafka-to-task
   "Instrument a jobs catalog entry with Kafka options
@@ -78,9 +78,12 @@
   :kafka/commit-interval
   :kafka/request-size        -
   "
-  [job task-name opts]
-  (let [kafka-task (find-task (:catalog job) task-name)
-        task-type  (:onyx/type kafka-task)]
-    (-> job
-        (update-task task-name (fn [m] (merge m opts)))
-        (update-task task-name get-serializer-fn))))
+  [job task opts] ;; TODO: Catch this assertion error
+  (if-let [entry (view-single job (*> (module-lens [:catalog] :onyx/name task)
+                                      (conditionally (fn [foci]
+                                                       (let [t (get foci :onyx/plugin)]
+                                                         (or (= t :onyx.plugin.kafka/read-messages)
+                                                             (= t :onyx.plugin.kafka/write-messages)))))))]
+    (lupdate job (module-lens [:catalog] :onyx/name task) (comp expand-deserializer-fn
+                                                                expand-serializer-fn))
+    (throw (java.lang.IllegalArgumentException "Catalog entry must specify a Kafka plugin for :onyx/plugin"))))
