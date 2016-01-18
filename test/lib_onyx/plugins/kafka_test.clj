@@ -1,6 +1,8 @@
 (ns lib-onyx.plugins.kafka-test
   (:require [lib-onyx.plugins.kafka :refer :all]
-            [clojure.test :refer [is deftest testing]]))
+            [clojure.test :refer [is deftest testing]]
+            [lib-onyx.job.utils :refer [catalog-entrys-by-name]]
+            [traversy.lens :refer :all :rename {update lupdate}]))
 
 (def sample-job
   {:catalog
@@ -13,24 +15,19 @@
      :onyx/type          :output}]
    :lifecycles [{:dont :touch}]})
 
-(deftest add-kafka-lifecycles-test
+(deftest add-kafka-to-input-and-output-test
   (let [instr-job (-> sample-job
-                      (add-kafka-lifecycles :read-segments)
-                      (add-kafka-lifecycles :write-segments))]
+                      (add-kafka-input :read-segments)
+                      (add-kafka-output :write-segments {:kafka/topic "meetup"}))]
     (testing "that we can add the necessary lifecycles to a job for kafka"
       (is (some #{{:lifecycle/task :read-segments, :lifecycle/calls :onyx.plugin.kafka/read-messages-calls}
                   {:lifecycle/task :write-segments, :lifecycle/calls :onyx.plugin.kafka/write-messages-calls}}
                 (:lifecycles instr-job))))
     (testing "that we didnt clobber any other lifecycles in the workflow"
       (is (some #{{:dont :touch}} (:lifecycles instr-job))))
-    (testing "that we throw an exception when an :onyx/type is unspecified or invalid"
-      (is (thrown? Exception
-                   (add-kafka-lifecycles {:catalog [{:onyx/name :read-segments
-                                                     :onyx/type :function}]}
-                                         :read-segments)))
-      (is (thrown? java.lang.AssertionError
-                   (add-kafka-lifecycles {:catalog [{:onyx/name :read-segments}]}
-                                         :read-segments))))))
+    (testing "that we can also get opts merged in"
+      (is (= "meetup"
+           (:kafka/topic (-> instr-job (view-single (catalog-entrys-by-name :write-segments)))))))))
 
 (deftest serialization-fns-test
   (testing "EDN and JSON types"
@@ -43,12 +40,4 @@
     (is (= {:kafka/deserializer-fn :lib-onyx.plugins.kafka/deserialize-message-edn}
            (expand-deserializer-fn {:kafka/deserializer-fn :edn})))))
 
-(deftest add-kafka-to-task-test
-  (testing "that we can add kafka ops to a task"
-    (= (first (:catalog (add-kafka-catalog sample-job :read-segments {:kafka/serializer-fn :json
-                                                                      :kafka/topic "mytopic"})))
-       {:onyx/name :read-segments
-        :onyx/plugin :onyx.plugin.kafka/read-messages
-        :onyx/type :input
-        :kafka/serializer-fn :json
-        :kafka/topic "mytopic"})))
+;(add-kafka-input sample-job :read-segments)

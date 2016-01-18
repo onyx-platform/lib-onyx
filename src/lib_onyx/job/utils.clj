@@ -75,3 +75,29 @@
   (*>
    (combine (in section) each)
    (conditionally (fn [foci] (= val (get foci key))))))
+
+(defn catalog-entrys-by-name
+  "Lens to access catalog entries by their :onyx/name attribute."
+  [task-name]
+  (unit-lens [:catalog] :onyx/name task-name))
+
+(defn lifecycle-entrys-by-name
+  "Lens to access catalog entries by their :lifecycle/name attribute."
+  [task-name]
+  (unit-lens [:lifecycles] :lifecycle/name task-name))
+
+(defn flow-conditions-by-input-name
+  [task-name]
+  (unit-lens [:flow-conditions] :flow/from task-name))
+
+(defn flow-conditions-by-output-name
+  [task-name]
+  (unit-lens [:flow-conditions] :flow/to task-name))
+
+(defn windows-by-id
+  [w-id]
+  (unit-lens [:windows] :window/id w-id))
+
+(defn windows-by-task-name
+  [task-name]
+  (unit-lens [:windows] :window/task task-name))
