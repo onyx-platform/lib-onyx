@@ -38,6 +38,63 @@
                  :edn     ::deserialize-message-edn
                  v))))
 
+(defn add-kafka-input-lens
+  "Instrument a job with Kafka lifecycles and catalog entries.
+  opts are of the following form for Kafka consumers AND producers
+
+  :kafka/topic               - Name of a topic
+  :kafka/partition           - Optional: partition to read from if
+                                 auto-assignment is not used
+  :kafka/group-id            - The consumer identity to store in ZooKeeper
+  :kafka/zookeeper           - The ZooKeeper connection string
+  :kafka/offset-reset        - Offset bound to seek to when not found
+                                 - :smallest or :largest
+  :kafka/force-reset?        - Force to read from the beginning or end of the
+                                 log, as specified by :kafka/offset-reset.
+                                 If false, reads from the last acknowledged
+                                 messsage if it exists
+  :kafka/deserializer-fn     - :json or :edn for default deserializers, a
+                                custom fn can also be supplied. Only for
+                                :input tasks
+
+  ========================== Optional Settings =================================
+  :kafka/chan-capacity
+  :kafka/fetch-size
+  :kafka/empty-read-back-off
+  :kafka/commit-interval
+  :kafka/request-size"
+  ([job task] (add-kafka-input-lens job task nil))
+  ([job task opts]
+   (if-let [entry (-> job (view-single (catalog-entrys-by-name task)))]
+     (-> job
+         (update-in [:lifecycles] conj {:lifecycle/task task
+                                        :lifecycle/calls :onyx.plugin.kafka/read-messages-calls})
+         (lupdate (catalog-entrys-by-name task) (comp (partial merge opts)
+                                                      expand-deserializer-fn)))
+     (throw (java.lang.IllegalArgumentException)))))
+
+(defn add-kafka-output-lens
+  "Instrument a job with Kafka lifecycles and catalog entries.
+  opts are of the following form for Kafka consumers AND producers
+
+  :kafka/topic               - Name of a topic
+  :kafka/zookeeper           - The ZooKeeper connection string
+  :kafka/serializer-fn       - :json or :edn for default serializers, a
+                                custom fn can also be supplied. Only for
+                                :output tasks
+
+  ========================== Optional Settings =================================
+  :kafka/request-size"
+  ([job task] (add-kafka-output-lens job task nil))
+  ([job task opts]
+   (if-let [entry (-> job (view-single (catalog-entrys-by-name task)))]
+     (-> job
+         (update-in [:lifecycles] conj {:lifecycle/task task
+                                        :lifecycle/calls :onyx.plugin.kafka/write-messages-calls})
+         (lupdate (catalog-entrys-by-name task) (comp (partial merge opts)
+                                                      expand-serializer-fn)))
+     (throw (java.lang.IllegalArgumentException)))))
+
 (defn add-kafka-input
   "Instrument a job with Kafka lifecycles and catalog entries.
   opts are of the following form for Kafka consumers AND producers
@@ -65,12 +122,13 @@
   :kafka/request-size"
   ([job task] (add-kafka-input job task nil))
   ([job task opts]
-   (if-let [entry (-> job (view-single (catalog-entrys-by-name task)))]
+   (if-let [entry (first (filter #(= (:onyx/name %) task) (:catalog job)))]
      (-> job
          (update-in [:lifecycles] conj {:lifecycle/task task
                                         :lifecycle/calls :onyx.plugin.kafka/read-messages-calls})
-         (lupdate (catalog-entrys-by-name task) (comp (partial merge opts)
-                                                      expand-deserializer-fn)))
+         (update-in [:catalog] (fn [catalog]
+                                 (replace {entry ((comp (partial merge opts)
+                                                        expand-deserializer-fn) entry)} catalog))))
      (throw (java.lang.IllegalArgumentException)))))
 
 (defn add-kafka-output
@@ -87,10 +145,11 @@
   :kafka/request-size"
   ([job task] (add-kafka-output job task nil))
   ([job task opts]
-   (if-let [entry (-> job (view-single (catalog-entrys-by-name task)))]
+   (if-let [entry (first (filter #(= (:onyx/name %) task) (:catalog job)))]
      (-> job
          (update-in [:lifecycles] conj {:lifecycle/task task
                                         :lifecycle/calls :onyx.plugin.kafka/write-messages-calls})
-         (lupdate (catalog-entrys-by-name task) (comp (partial merge opts)
-                                                      expand-serializer-fn)))
+         (update-in [:catalog] (fn [catalog]
+                                 (replace {entry ((comp (partial merge opts)
+                                                        expand-serializer-fn) entry)} catalog))))
      (throw (java.lang.IllegalArgumentException)))))

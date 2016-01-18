@@ -31,7 +31,7 @@
                                   (in [:core.async/id])
                                   maybe)))]
         (is (instance? UUID uuid))
-        (is (get-input-channel uuid))))
+        (is (get-channel uuid))))
     (testing "that we can also retrieve a map of different channels"
       (let [{:keys [read-segments write-segments]} (get-core-async-channels instr-job)]
         (is (not (= read-segments write-segments)))
