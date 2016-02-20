@@ -53,19 +53,3 @@
   "Shuts down the log subscriber Component."
   [log-subscriber]
   (component/stop log-subscriber))
-
-
-#_(def subscriber
-  (start-log-subscriber
-   {:onyx/id "mikes-tenancy2"
-    :zookeeper/address "127.0.0.1:2181"
-    :onyx.peer/job-scheduler :onyx.job-scheduler/greedy
-    :onyx.peer/zookeeper-timeout 60000
-    :onyx.messaging.aeron/embedded-driver? true
-    :onyx.messaging/allow-short-circuit? false
-    :onyx.messaging/impl :aeron
-    :onyx.messaging/peer-port 40199
-    :onyx.messaging/bind-addr "localhost"}))
-
-#_ (stop-log-subscriber subscriber)
-#_(:as-of-entry @(:state subscriber))
