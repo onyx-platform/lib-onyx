@@ -2,6 +2,14 @@
 
 lib-onyx is a utilities library to make working with Onyx's extensibility features easier out of the box.
 
+### Installation
+
+On Clojars:
+
+```
+[org.onyxplatform/lib-onyx "0.8.12.0-SNAPSHOT"]
+```
+
 ### Log Subscription
 
 View every update to the Onyx Log as it happens. Just supply your peer configuration:
