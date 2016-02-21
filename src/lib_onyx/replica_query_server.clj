@@ -44,7 +44,9 @@
       (let [result (f replica)]
         {:status 200
          :headers {"Content-Type" (serializer-name content-type)}
-         :body (serializer result)}))))
+         :body (serializer {:result result
+                            :as-of-entry as-of-entry
+                            :as-of-timestamp as-of-timestamp})}))))
 
 (defn app [state]
   {:handler (partial handler state)})
