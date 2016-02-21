@@ -30,7 +30,9 @@ See the docstrings for more information.
 
 ### Replica Queries
 
-Given a log subscriber, use convenience functions to query the replica state:
+Given a log subscriber, use convenience functions to query the replica state.
+All functions take a dereferenced replica so that they can operate on
+a stable, immutable value:
 
 ```clojure
 (require '[lib-onyx.replica-query :as rq])
@@ -38,9 +40,11 @@ Given a log subscriber, use convenience functions to query the replica state:
 
 (def subscriber (s/start-log-subscriber your-peer-config))
 
-(println (rq/jobs subscriber))
+(def replica (rq/deref-replica subscriber)
 
-(println (rq/peers subscriber))
+(println (rq/jobs replica))
+
+(println (rq/peers replica))
 
 (s/stop-log-subscriber subscriber)
 ```

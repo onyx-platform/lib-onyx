@@ -1,17 +1,11 @@
 (defproject org.onyx-platform/lib-onyx "0.8.12.0-SNAPSHOT"
   :description "A library to support additional functionality in Onyx"
-  :url "https://github.com/MichaelDrogalis/lib-onyx"
+  :url "https://github.com/onyx-platform/lib-onyx"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/core.async "0.2.374"]
                  [org.onyxplatform/onyx "0.8.11"]
                  [com.stuartsierra/component "0.3.1"]
-                 [com.taoensso/timbre "4.1.4"]
                  [cheshire "5.5.0"]
-                 [ragtime "0.5.2"]
-                 [traversy "0.4.0"]
-                 [mysql/mysql-connector-java "5.1.6"]
-                 [com.rpl/specter "0.9.1"]]
-  :profiles {:dev {:dependencies []
-                   :plugins []}})
+                 [ring-jetty-component "0.3.0"]
+                 [ring "1.4.0"]])

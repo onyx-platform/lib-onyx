@@ -7,16 +7,13 @@
 (defn apply-entries! [ch replica-state]
   (thread
     (loop []
-      (prn "block")
       (when-let [entry (<!! ch)]
-        (prn (:message-id entry))
         (let [result (extensions/apply-log-entry entry (:replica @replica-state))
               rep {:as-of-entry (:message-id entry)
                    :as-of-timestamp (:created-at entry)
                    :replica result}]
           (reset! replica-state rep)
-          (recur))))
-    (prn :done)))
+          (recur))))))
 
 (defrecord LogSubscriber [peer-config inbox-capacity]
   component/Lifecycle
@@ -37,6 +34,9 @@
     (close! (:apply-thread component))
     (onyx.api/shutdown-env (:env component))))
 
+(defn log-subscriber-component [peer-config inbox-capacity]
+  (->LogSubscriber peer-config inbox-capacity))
+
 (defn start-log-subscriber
   "Takes a peer config map, and an args map. Args accepts keys
    :inbox-capacity, representing the buffer size of the core.async
@@ -45,9 +45,11 @@
    and :as-of-timestamp. :replica is the current replica. :as-of-entry
    is the sequential ID in ZooKeeper for the last entry read by this subscriber,
    and :as-of-timestamp is the timestamp of the entry, as known by ZooKeeper."
-  ([peer-config] (start-log-subscriber peer-config {:inbox-capacity 1000}))
+  ([peer-config]
+   (start-log-subscriber peer-config {:inbox-capacity 1000}))
   ([peer-config args]
-   (component/start (->LogSubscriber peer-config (:inbox-capacity args)))))
+   (let [c (log-subscriber-component peer-config (:inbox-capacity args))]
+     (component/start c))))
 
 (defn stop-log-subscriber
   "Shuts down the log subscriber Component."
