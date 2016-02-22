@@ -77,12 +77,47 @@
      (let [job-id (get-in request [:query-params "job-id"])]
        (rq/task-scheduler replica (parse-uuid job-id))))
 
+   {:uri "/job/workflow"
+    :request-method :get}
+   (fn [request log-subscriber replica]
+     (let [job-id (->> (get-in request [:query-params "job-id"])
+                       (parse-uuid))]
+       (jq/workflow log-subscriber job-id)))
+
    {:uri "/job/catalog"
     :request-method :get}
    (fn [request log-subscriber replica]
      (let [job-id (->> (get-in request [:query-params "job-id"])
                        (parse-uuid))]
        (jq/catalog log-subscriber job-id)))
+
+   {:uri "/job/flow-conditions"
+    :request-method :get}
+   (fn [request log-subscriber replica]
+     (let [job-id (->> (get-in request [:query-params "job-id"])
+                       (parse-uuid))]
+       (jq/flow-conditions log-subscriber job-id)))
+
+   {:uri "/job/lifecycles"
+    :request-method :get}
+   (fn [request log-subscriber replica]
+     (let [job-id (->> (get-in request [:query-params "job-id"])
+                       (parse-uuid))]
+       (jq/lifecycles log-subscriber job-id)))
+
+   {:uri "/job/windows"
+    :request-method :get}
+   (fn [request log-subscriber replica]
+     (let [job-id (->> (get-in request [:query-params "job-id"])
+                       (parse-uuid))]
+       (jq/windows log-subscriber job-id)))
+
+   {:uri "/job/triggers"
+    :request-method :get}
+   (fn [request log-subscriber replica]
+     (let [job-id (->> (get-in request [:query-params "job-id"])
+                       (parse-uuid))]
+       (jq/triggers log-subscriber job-id)))
 
    {:uri "/job/task"
     :request-method :get}
