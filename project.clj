@@ -8,4 +8,6 @@
                  [com.stuartsierra/component "0.3.1"]
                  [cheshire "5.5.0"]
                  [ring-jetty-component "0.3.0"]
-                 [ring "1.4.0"]])
+                 [ring "1.4.0"]]
+  :profiles {:dev {:dependencies [[de.ubercode.clostache/clostache "1.4.0"]]
+                   :source-paths ["dev-src"]}})

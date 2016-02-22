@@ -1,3 +1,0 @@
-;; resources/migrations/001-foo.edn
-{:up ["CREATE TABLE foo (id int);"]
- :down ["DROP TABLE foo;"]}
