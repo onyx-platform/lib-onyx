@@ -10,3 +10,5 @@
    "doc/server-api.md"
    (render-resource "replica_query_server_template.md"
                     {:endpoints annotated-routes})))
+
+#_(generate-docs)

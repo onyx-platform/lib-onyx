@@ -1,5 +1,7 @@
 ### Replica Query Server Endpoints
 
+---
+
 `[:get]` `/job/flow-conditions`
 
 Given a job id, returns flow conditions for this job.
@@ -111,6 +113,4 @@ Given a job id and task id, returns catalog entry for this task.
 `[:get]` `/replica/job-scheduler`
 
 Returns the job scheduler for this tenancy of the cluster.
-
----
 
