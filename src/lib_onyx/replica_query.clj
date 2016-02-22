@@ -10,6 +10,9 @@
 (defn killed-jobs [replica]
   (:killed-jobs replica))
 
+(defn completed-jobs [replica]
+  (:completed-jobs replica))
+
 (defn peers [replica]
   (:peers replica))
 
