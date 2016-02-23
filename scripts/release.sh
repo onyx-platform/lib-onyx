@@ -16,6 +16,7 @@ git commit -m "Autocommit replica server docs." || true
 cp -R doc/api* ../lib-onyx-temp-docs
 
 git checkout gh-pages
+rm -rf *
 mv ../lib-onyx-temp-docs/* .
 rm -r ../lib-onyx-temp-docs
 git add .
