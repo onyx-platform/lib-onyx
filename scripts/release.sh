@@ -8,12 +8,19 @@ set -o xtrace
 cd "$(dirname "$0")/.."
 
 lein doc
-mv doc ../lib-onyx-temp-docs
+lein run -m lib-onyx.render-server-api
+
+git add doc
+git commit -m "Autocommit replica server docs."
+
+cd -R doc/api* ../lib-onyx-temp-docs
 
 git checkout gh-pages
-mv ../lib-onyx-temp-docs/api/* .
+mv ../lib-onyx-temp-docs/* .
 rm -r ../lib-onyx-temp-docs
 
+git push -u origin gh-pages
+git push -u origin master
 
 # if [[ "$#" -ne 2 ]]; then
 # 	echo "Usage: $0 new-version release-branch"
