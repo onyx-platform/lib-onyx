@@ -13,7 +13,7 @@ lein run -m lib-onyx.render-server-api
 git add doc
 git commit -m "Autocommit replica server docs." || true
 
-cp -R doc/api* ../lib-onyx-temp-docs
+cp -R doc/api/* ../lib-onyx-temp-docs
 
 git checkout gh-pages
 rm -rf *
