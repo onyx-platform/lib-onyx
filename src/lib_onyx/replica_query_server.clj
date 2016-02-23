@@ -6,7 +6,6 @@
             [lib-onyx.replica-query :as rq]
             [lib-onyx.job-query :as jq]
             [cheshire.core :refer [generate-string]]
-            [schema.core :as schema]
             [onyx.schema :as os])
   (:import [java.util UUID]))
 
@@ -17,28 +16,24 @@
   {{:uri "/replica/peers"
     :request-method :get}
    {:doc (:doc (meta #'rq/peers))
-    :output-schema (:peers os/Replica)
     :f (fn [request log-subscriber replica]
          (rq/peers replica))}
 
    {:uri "/replica/jobs"
     :request-method :get}
    {:doc (:doc (meta #'rq/jobs))
-    :output-schema (:jobs os/Replica)
     :f (fn [request log-subscriber replica]
          (rq/jobs replica))}
 
    {:uri "/replica/killed-jobs"
     :request-method :get}
    {:doc (:doc (meta #'rq/killed-jobs))
-    :output-schema (:killed-jobs os/Replica)
     :f (fn [request log-subscriber replica]
          (rq/killed-jobs replica))}
 
    {:uri "/replica/completed-jobs"
     :request-method :get}
    {:doc (:doc (meta #'rq/completed-jobs))
-    :output-schema (:completed-jobs os/Replica)
     :f (fn [request log-subscriber replica]
          (rq/completed-jobs replica))}
 
@@ -93,7 +88,6 @@
    {:uri "/replica/job-scheduler"
     :request-method :get}
    {:doc (:doc (meta #'rq/job-scheduler))
-    :output-schema (:job-scheduler os/Replica)
     :f (fn [request log-subscriber replica]
          (rq/job-scheduler replica))}
 
