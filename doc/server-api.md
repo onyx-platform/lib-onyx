@@ -4,6 +4,8 @@ The Replica Query Server has a number of endpoints for accessing the information
 
 ---
 
+##### Route
+
 `[:get]` `/job/flow-conditions`
 
 
@@ -11,9 +13,13 @@ The Replica Query Server has a number of endpoints for accessing the information
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns flow conditions for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/killed-jobs`
 
@@ -22,9 +28,13 @@ Given a job id, returns flow conditions for this job.
 
 ``
 
+##### Docstring
+
 Lists all the job ids that have been killed.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/job-allocations`
 
@@ -33,9 +43,13 @@ Lists all the job ids that have been killed.
 
 ``
 
+##### Docstring
+
 Returns a map of job id -&gt; task id -&gt; peer ids, denoting which peers are assigned to which tasks.
 
 ---
+
+##### Route
 
 `[:get]` `/job/windows`
 
@@ -44,9 +58,13 @@ Returns a map of job id -&gt; task id -&gt; peer ids, denoting which peers are a
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns windows for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/job/workflow`
 
@@ -55,9 +73,13 @@ Given a job id, returns windows for this job.
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns workflow for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/task-scheduler`
 
@@ -66,9 +88,13 @@ Given a job id, returns workflow for this job.
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns the task scheduler for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/jobs`
 
@@ -77,9 +103,13 @@ Given a job id, returns the task scheduler for this job.
 
 ``
 
+##### Docstring
+
 Lists all non-killed, non-completed job ids.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/peer-allocation`
 
@@ -88,9 +118,13 @@ Lists all non-killed, non-completed job ids.
 
 `{"peer-id" java.lang.String}`
 
+##### Docstring
+
 Given a peer id, returns the job id and task id that this peer is currently assigned to, if any.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/task-allocations`
 
@@ -99,9 +133,13 @@ Given a peer id, returns the job id and task id that this peer is currently assi
 
 ``
 
+##### Docstring
+
 Given a job id, returns a map of task id -&gt; peer ids, denoting which peers are assigned to which tasks for this job only.
 
 ---
+
+##### Route
 
 `[:get]` `/job/catalog`
 
@@ -110,9 +148,13 @@ Given a job id, returns a map of task id -&gt; peer ids, denoting which peers ar
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns catalog for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/peers`
 
@@ -121,9 +163,13 @@ Given a job id, returns catalog for this job.
 
 ``
 
+##### Docstring
+
 Lists all the peer ids.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/completed-jobs`
 
@@ -132,9 +178,13 @@ Lists all the peer ids.
 
 ``
 
+##### Docstring
+
 Lists all the job ids that have been completed.
 
 ---
+
+##### Route
 
 `[:get]` `/job/triggers`
 
@@ -143,9 +193,13 @@ Lists all the job ids that have been completed.
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns triggers for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/tasks`
 
@@ -154,9 +208,13 @@ Given a job id, returns triggers for this job.
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns all the task ids for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/job/lifecycles`
 
@@ -165,9 +223,13 @@ Given a job id, returns all the task ids for this job.
 
 `{"job-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id, returns lifecycles for this job.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/peer-site`
 
@@ -176,9 +238,13 @@ Given a job id, returns lifecycles for this job.
 
 `{"peer-id" java.lang.String}`
 
+##### Docstring
+
 Given a peer id, returns the Aeron hostname and port that this peer advertises to the rest of the cluster.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/peer-state`
 
@@ -187,9 +253,13 @@ Given a peer id, returns the Aeron hostname and port that this peer advertises t
 
 `{"peer-id" java.lang.String}`
 
+##### Docstring
+
 Given a peer id, returns its current execution state (e.g. :idle, :active, etc).
 
 ---
+
+##### Route
 
 `[:get]` `/job/task`
 
@@ -198,9 +268,13 @@ Given a peer id, returns its current execution state (e.g. :idle, :active, etc).
 
 `{"job-id" java.lang.String, "task-id" java.lang.String}`
 
+##### Docstring
+
 Given a job id and task id, returns catalog entry for this task.
 
 ---
+
+##### Route
 
 `[:get]` `/replica/job-scheduler`
 
@@ -208,6 +282,8 @@ Given a job id and task id, returns catalog entry for this task.
 ##### Query Params Schema
 
 ``
+
+##### Docstring
 
 Returns the job scheduler for this tenancy of the cluster.
 
