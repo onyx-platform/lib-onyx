@@ -2,6 +2,28 @@
 
 The Replica Query Server has a number of endpoints for accessing the information about a running Onyx cluster. Below we display the HTTP method, the URI, the docstring for the route, and any associated parameters that it takes in its query string.
 
+#### Summary
+- `/job/catalog`
+- `/job/flow-conditions`
+- `/job/lifecycles`
+- `/job/task`
+- `/job/triggers`
+- `/job/windows`
+- `/job/workflow`
+- `/replica/completed-jobs`
+- `/replica/job-allocations`
+- `/replica/job-scheduler`
+- `/replica/jobs`
+- `/replica/killed-jobs`
+- `/replica/peer-allocation`
+- `/replica/peer-site`
+- `/replica/peer-state`
+- `/replica/peers`
+- `/replica/task-allocations`
+- `/replica/task-scheduler`
+- `/replica/tasks`
+
+
 ---
 
 ##### Route
@@ -135,7 +157,7 @@ Lists all the job ids that have been completed.
 
 ##### Docstring
 
-Returns a map of job id -&gt; task id -&gt; peer ids, denoting which peers are assigned to which tasks.
+Returns a map of job id -> task id -> peer ids, denoting which peers are assigned to which tasks.
 
 ---
 
@@ -255,7 +277,7 @@ Lists all the peer ids.
 
 ##### Docstring
 
-Given a job id, returns a map of task id -&gt; peer ids, denoting which peers are assigned to which tasks for this job only.
+Given a job id, returns a map of task id -> peer ids, denoting which peers are assigned to which tasks for this job only.
 
 ---
 
