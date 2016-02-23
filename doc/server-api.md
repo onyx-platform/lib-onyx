@@ -14,6 +14,12 @@ Lists all the job ids that have been killed.
 
 ---
 
+`[:get]` `/replica/job-allocations`
+
+Returns a map of job id -&gt; task id -&gt; peer ids, denoting which peers are assigned to which tasks.
+
+---
+
 `[:get]` `/job/windows`
 
 Given a job id, returns windows for this job.
@@ -23,12 +29,6 @@ Given a job id, returns windows for this job.
 `[:get]` `/job/workflow`
 
 Given a job id, returns workflow for this job.
-
----
-
-`[:get]` `/replica/task-allocation`
-
-Given a job id, returns a map of task id -&gt; peer ids, denoting which peers are assigned to which tasks for this job only.
 
 ---
 
@@ -50,6 +50,12 @@ Given a peer id, returns the job id and task id that this peer is currently assi
 
 ---
 
+`[:get]` `/replica/task-allocations`
+
+Given a job id, returns a map of task id -&gt; peer ids, denoting which peers are assigned to which tasks for this job only.
+
+---
+
 `[:get]` `/job/catalog`
 
 Given a job id, returns catalog for this job.
@@ -58,7 +64,7 @@ Given a job id, returns catalog for this job.
 
 `[:get]` `/replica/peers`
 
-Lists all the peer idss.
+Lists all the peer ids.
 
 ---
 
@@ -76,19 +82,13 @@ Given a job id, returns triggers for this job.
 
 `[:get]` `/replica/tasks`
 
-Given a job ids, returns all the task ids for this job.
+Given a job id, returns all the task ids for this job.
 
 ---
 
 `[:get]` `/job/lifecycles`
 
 Given a job id, returns lifecycles for this job.
-
----
-
-`[:get]` `/replica/job-allocation`
-
-Returns a map of job id -&gt; task id -&gt; peer ids, denoting which peers are assigned to which tasks.
 
 ---
 

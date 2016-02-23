@@ -10,4 +10,6 @@
                  [ring-jetty-component "0.3.0"]
                  [ring "1.4.0"]]
   :profiles {:dev {:dependencies [[de.ubercode.clostache/clostache "1.4.0"]]
-                   :source-paths ["dev-src"]}})
+                   :plugins [[codox "0.8.8"]]
+                   :source-paths ["dev-src"]}}
+  :codox {:output-dir "doc/api"})

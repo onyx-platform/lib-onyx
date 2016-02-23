@@ -4,7 +4,7 @@
             [onyx.extensions :as extensions]
             [onyx.api]))
 
-(defn apply-entries! [ch replica-state]
+(defn ^{:no-doc true} apply-entries! [ch replica-state]
   (thread
     (loop []
       (when-let [entry (<!! ch)]
