@@ -11,13 +11,15 @@ lein doc
 lein run -m lib-onyx.render-server-api
 
 git add doc
-git commit -m "Autocommit replica server docs."
+git commit -m "Autocommit replica server docs." || true
 
 cp -R doc/api* ../lib-onyx-temp-docs
 
 git checkout gh-pages
 mv ../lib-onyx-temp-docs/* .
 rm -r ../lib-onyx-temp-docs
+git add .
+git commit -m "Autocommit API docs." || true
 
 git push -u origin gh-pages
 git push -u origin master
