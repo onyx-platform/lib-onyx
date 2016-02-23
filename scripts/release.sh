@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 lein doc
 mv doc ../lib-onyx-temp-docs
 
-gco gh-pages
+git checkout gh-pages
 mv ../lib-onyx-temp-docs/api/* .
 rm -r ../lib-onyx-temp-docs
 
