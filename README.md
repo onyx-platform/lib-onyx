@@ -10,6 +10,11 @@ On Clojars:
 [org.onyxplatform/lib-onyx "0.8.12.0-SNAPSHOT"]
 ```
 
+### API docs
+
+- [Clojure API](http://www.onyxplatform.org/lib-onyx)
+- [HTTP API](doc/server-api.md)
+
 ### Log Subscription
 
 View every update to the Onyx Log as it happens. Just supply your peer configuration:
@@ -26,7 +31,7 @@ View every update to the Onyx Log as it happens. Just supply your peer configura
 (s/stop-log-subscriber subscriber)
 ```
 
-See the docstrings for more information.
+See the API docs listed above for more information.
 
 ### Replica Queries
 
@@ -49,7 +54,52 @@ a stable, immutable value:
 (s/stop-log-subscriber subscriber)
 ```
 
-See the `replica_query.clj` for the full API.
+See the API docs listed above for more information.
+
+### Replica HTTP Server
+
+lib-onyx exposes an HTTP server to service replica and cluster queries across languages.
+
+```clojure
+(require '[lib-onyx.lib-onyx.replica-query-server :as rqs])
+
+(def server-port 3000)
+
+(def server (rqs/start-replica-query-server peer-config server-port)
+```
+
+Then query it:
+
+```
+$ http --json http://localhost:3000/replica/peers
+```
+
+```json
+HTTP/1.1 200 OK
+Content-Length: 197
+Content-Type: application/json
+Date: Tue, 23 Feb 2016 03:35:08 GMT
+Server: Jetty(9.2.10.v20150310)
+
+{
+    "as-of-entry": 12, 
+    "as-of-timestamp": 1456108757818, 
+    "result": [
+        "e52df81d-38c9-44e6-9e3d-177d3e83292b", 
+        "fd4725f9-3429-49eb-840d-6c3e29cecc41", 
+        "fc933dda-7260-4547-93fc-241a02ca599a"
+    ], 
+    "status": "success"
+}
+```
+
+See the HTTP docs listed at the top of this page for all the endpoints.
+
+And bring it back it down with:
+
+```clojure
+(rqs/stop-replica-query-server server)
+```
 
 ## License
 
