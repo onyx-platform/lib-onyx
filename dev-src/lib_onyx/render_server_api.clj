@@ -3,7 +3,7 @@
             [lib-onyx.replica-query-server :as s]))
 
 (def annotated-routes
-  (map (fn [[k v]] (merge k v)) s/endpoints))
+  (sort-by :uri (map (fn [[k v]] (merge k v)) s/endpoints)))
 
 (defn generate-docs []
   (spit
