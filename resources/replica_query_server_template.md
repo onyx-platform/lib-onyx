@@ -5,12 +5,16 @@ The Replica Query Server has a number of endpoints for accessing the information
 {{#endpoints}}
 ---
 
+##### Route
+
 `[{{ request-method }}]` `{{ uri }}`
 
 
 ##### Query Params Schema
 
 `{{{ query-params-schema }}}`
+
+##### Docstring
 
 {{ doc }}
 
