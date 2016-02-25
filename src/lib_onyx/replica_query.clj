@@ -2,7 +2,7 @@
   (:require [onyx.log.commands.common :as common]))
 
 (defn deref-replica
-  "Takes a log subscriber and derefences the replica as an immutable value."
+  "Derefences the replica as an immutable value."
   [log-subscriber]
   (:replica @(:state log-subscriber)))
 

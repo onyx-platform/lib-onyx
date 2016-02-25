@@ -13,7 +13,13 @@
   (UUID/fromString x))
 
 (def ^{:no-doc true} endpoints
-  {{:uri "/replica/peers"
+  {{:uri "/replica"
+    :request-method :get}
+   {:doc (:doc (meta #'rq/deref-replica))
+    :f (fn [request log-subscriber replica]
+         replica)}
+
+   {:uri "/replica/peers"
     :request-method :get}
    {:doc (:doc (meta #'rq/peers))
     :f (fn [request log-subscriber replica]
