@@ -11,6 +11,7 @@ The Replica Query Server has a number of endpoints for accessing the information
 - `/job/triggers`
 - `/job/windows`
 - `/job/workflow`
+- `/replica`
 - `/replica/completed-jobs`
 - `/replica/job-allocations`
 - `/replica/job-scheduler`
@@ -128,6 +129,21 @@ Given a job id, returns windows for this job.
 ##### Docstring
 
 Given a job id, returns workflow for this job.
+
+---
+
+##### Route
+
+`[:get]` `/replica`
+
+
+##### Query Params Schema
+
+``
+
+##### Docstring
+
+Derefences the replica as an immutable value.
 
 ---
 
