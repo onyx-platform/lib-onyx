@@ -2,6 +2,7 @@
   (:require [onyx.log.commands.common :as common]
             [onyx.log.zookeeper :as zk]
             [onyx.static.planning :refer [find-task]]
+            [lib-onyx.replica-query :as rq]
             [onyx.extensions :as extensions]))
 
 (defn ^{:no-doc true} get-log [log-subscriber]
@@ -26,25 +27,48 @@
   "Given a job id, returns flow conditions for this job."
   [log-subscriber job-id]
   (let [log (get-log log-subscriber)]
-    (extensions/read-chunk log :flow-conditions job-id)))
+    (or (extensions/read-chunk log :flow-conditions job-id) [])))
 
 (defn lifecycles
   "Given a job id, returns lifecycles for this job."
   [log-subscriber job-id]
   (let [log (get-log log-subscriber)]
-    (extensions/read-chunk log :lifecycles job-id)))
+    (or (extensions/read-chunk log :lifecycles job-id) [])))
 
 (defn windows
   "Given a job id, returns windows for this job."
   [log-subscriber job-id]
   (let [log (get-log log-subscriber)]
-    (extensions/read-chunk log :windows job-id)))
+    (or (extensions/read-chunk log :windows job-id) [])))
 
 (defn triggers
   "Given a job id, returns triggers for this job."
   [log-subscriber job-id]
   (let [log (get-log log-subscriber)]
-    (extensions/read-chunk log :triggers job-id)))
+    (or (extensions/read-chunk log :triggers job-id) [])))
+
+(defn exception
+  "Given a job id, return the exception for this job, if any"
+  [log-subscriber job-id]
+  (let [log (get-log log-subscriber)]
+    (extensions/read-chunk log :exception job-id)))
+
+(defn job-information 
+  "Given a job id and task id, returns job data for this task."
+  [log-subscriber replica job-id]
+  {:workflow (workflow log-subscriber job-id)
+   :catalog (catalog log-subscriber job-id)
+   :flow-conditions (flow-conditions log-subscriber job-id)
+   :lifecycles (lifecycles log-subscriber job-id)
+   :windows (windows log-subscriber job-id)
+   :triggers (triggers log-subscriber job-id)
+   :task-scheduler (rq/task-scheduler replica job-id)})
+
+(defn task-name 
+  "Given a task id, returns the task name" 
+  [log-subscriber task-id]
+  (let [log (get-log log-subscriber)]
+    (:name (extensions/read-chunk log :task task-id))))
 
 (defn task-information
   "Given a job id and task id, returns catalog entry for this task."

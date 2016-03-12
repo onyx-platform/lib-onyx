@@ -1,5 +1,6 @@
 (ns lib-onyx.replica-query
-  (:require [onyx.log.commands.common :as common]))
+  (:require [onyx.log.commands.common :as common]
+            [clojure.data]))
 
 (defn deref-replica
   "Derefences the replica as an immutable value."
@@ -37,7 +38,8 @@
   (:allocations replica))
 
 (defn task-allocations
-  "Given a job id, returns a map of task id -> peer ids, denoting which peers are assigned to which tasks for this job only."
+  "Given a job id, returns a map of task id -> peer ids, 
+  denoting which peers are assigned to which tasks for this job only."
   [replica job-id]
   ((job-allocations replica) job-id))
 
@@ -45,6 +47,15 @@
   "Given a peer id, returns the Aeron hostname and port that this peer advertises to the rest of the cluster."
   [replica peer-id]
   (get-in replica [:peer-sites peer-id]))
+
+(defn task->peer-sites 
+  "Given a job id and task-id returns {:peer-id ... :host ...} allocations for that task"
+  [replica job-id task-id]
+  (let [peers ((task-allocations replica job-id) task-id)]
+    (zipmap peers 
+            (map (fn [peer-id] 
+                   (:aeron/external-addr (peer-site replica peer-id))) 
+                 peers))))
 
 (defn peer-state
   "Given a peer id, returns its current execution state (e.g. :idle, :active, etc)."
