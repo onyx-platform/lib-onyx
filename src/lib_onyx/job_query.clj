@@ -3,7 +3,8 @@
             [onyx.log.zookeeper :as zk]
             [onyx.static.planning :refer [find-task]]
             [lib-onyx.replica-query :as rq]
-            [onyx.extensions :as extensions]))
+            [onyx.extensions :as extensions])
+  (:import [org.apache.zookeeper.KeeperException$NoNodeException]))
 
 (defn ^{:no-doc true} get-log [log-subscriber]
   (:log (:env log-subscriber)))
@@ -51,7 +52,10 @@
   "Given a job id, return the exception for this job, if any"
   [log-subscriber job-id]
   (let [log (get-log log-subscriber)]
-    (extensions/read-chunk log :exception job-id)))
+    (try (extensions/read-chunk log :exception job-id)
+         ;; Workaround for the fact that we don't handle this upstream
+         (catch org.apache.zookeeper.KeeperException$NoNodeException nne
+           (println "Exception not found for job" job-id)))))
 
 (defn job-information 
   "Given a job id and task id, returns job data for this task."

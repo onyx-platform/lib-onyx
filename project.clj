@@ -15,7 +15,6 @@
                  ^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
                  [org.onyxplatform/onyx "0.8.11"]
                  [com.stuartsierra/component "0.3.1"]
-                 [timothypratley/patchin "0.3.5"]
                  [cheshire "5.5.0"]
                  [ring-jetty-component "0.3.0"]
                  [ring "1.4.0"]]
