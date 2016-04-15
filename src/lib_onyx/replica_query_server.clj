@@ -82,15 +82,6 @@
          (let [peer-id (get-in request [:query-params "peer-id"])]
            (rq/peer-state replica (parse-uuid peer-id))))}
 
-   {:uri "/replica/peer-allocation"
-    :request-method :get}
-   {:doc (:doc (meta #'rq/peer-allocation))
-    :query-params-schema
-    {"peer-id" String}
-    :f (fn [request log-subscriber replica]
-         (let [peer-id (get-in request [:query-params "peer-id"])]
-           (rq/peer-allocation replica (parse-uuid peer-id))))}
-
    {:uri "/replica/job-scheduler"
     :request-method :get}
    {:doc (:doc (meta #'rq/job-scheduler))
