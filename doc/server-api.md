@@ -17,7 +17,6 @@ The Replica Query Server has a number of endpoints for accessing the information
 - `/replica/job-scheduler`
 - `/replica/jobs`
 - `/replica/killed-jobs`
-- `/replica/peer-allocation`
 - `/replica/peer-site`
 - `/replica/peer-state`
 - `/replica/peers`
@@ -224,21 +223,6 @@ Lists all the job ids that have been killed.
 
 ##### Route
 
-`[:get]` `/replica/peer-allocation`
-
-
-##### Query Params Schema
-
-`{"peer-id" java.lang.String}`
-
-##### Docstring
-
-Given a peer id, returns the job id and task id that this peer is currently assigned to, if any.
-
----
-
-##### Route
-
 `[:get]` `/replica/peer-site`
 
 
@@ -293,7 +277,8 @@ Lists all the peer ids.
 
 ##### Docstring
 
-Given a job id, returns a map of task id -> peer ids, denoting which peers are assigned to which tasks for this job only.
+Given a job id, returns a map of task id -> peer ids, 
+  denoting which peers are assigned to which tasks for this job only.
 
 ---
 
