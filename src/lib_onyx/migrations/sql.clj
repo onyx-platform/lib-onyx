@@ -39,20 +39,35 @@
    (s/optional-key :migrations-table) s/Str})
 
 (def JoplinConfigSchema
-  {:databases {s/Any JoplinDatabaseDescriptor}
+  {(s/optional-key :databases) {s/Any JoplinDatabaseDescriptor}
    (s/optional-key :migrators) {s/Any s/Str}
    (s/optional-key :seeds) s/Any
-   :environments {s/Any [{:db JoplinDatabaseDescriptor
-                          :migrator s/Str}]}})
+   :environments {s/Keyword [{:db JoplinDatabaseDescriptor
+                              :migrator s/Str}]}})
 
 (defn with-joplin-migrations
   "This task bundle modifier will continously try to apply data migrations
-  before allowing the task to start. Takes a joplin-config as defined in the
-  Joplin docs, and a specific 'environment' key to use.
-  https://github.com/juxt/joplin
+  before allowing the task to start.
 
-  This does not apply data seeders.
-  "
+  - joplin-config structure can be discovered from the schema and is specific
+  to your database(s). It is generally of this structure
+
+  {:environments {:dev [{:db {:type :sql
+                              :url 'jdbc-url'}
+                         :migrator 'resources/migrators/sql'}]}}
+
+  - joplin-environment is a selector for a specific config.
+  The only valid selector for the above example would be ':dev'.
+
+  The datastructure is expected in this form to make interop with the joplin
+  command line tools simple, since they share an expected shape. More can be
+  read about Joplin here https://github.com/juxt/joplin.
+
+  If you are providing this config data another way, either manually or through
+  a seperate mechanism, you may elide either-or the joplin-config or
+  joplin-environment.
+
+  This does not apply data seeders."
   ([] (with-joplin-migrations nil nil))
   ([joplin-environment] (with-joplin-migrations joplin-environment nil))
   ([joplin-environment joplin-config]
