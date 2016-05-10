@@ -13,7 +13,8 @@
                              :sign-releases false}}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  ^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
-                 [org.onyxplatform/onyx "0.9.1"]
+                 [org.onyxplatform/onyx "0.9.6"]
+                 [prismatic/schema "1.1.1"]
                  [com.stuartsierra/component "0.3.1"]
                  [joplin.core "0.3.6"]
                  [cheshire "5.5.0"]
