@@ -2,7 +2,6 @@
   (:require [joplin.core :as joplin]
             [taoensso.timbre :refer [info warn]]))
 
-
 (defn get-lifecycle-config
   "Tries to get a configuration key in the lifecycle or event map"
   [lifecycle event k]
