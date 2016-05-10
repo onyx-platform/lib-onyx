@@ -30,13 +30,30 @@
 (def joplin-migrations
   {:lifecycle/start-task? no-pending-migrations?})
 
+                                        ;((comp #{:f} :type) {:type})
+(def supported-plugins
+  (s/enum :jdbc :sql :es :zk :dt :cass))
+
 (def JoplinDatabaseDescriptor
-  {:type (s/enum :jdbc :sql :es :zk :dt :cass :dynamo)
-   (s/optional-key :url) s/Str
-   (s/optional-key :host) s/Str
-   (s/optional-key :port) s/Str
-   (s/optional-key :cluster) s/Str
-   (s/optional-key :migrations-table) s/Str})
+  (s/conditional
+   (comp #{:sql}    :type) {:type supported-plugins
+                            :url s/Str
+                            (s/optional-key :migrations-table) s/Str}
+   (comp #{:jdbc}   :type) {:type supported-plugins
+                            :url s/Str
+                            (s/optional-key :migrations-table) s/Str}
+   (comp #{:es}     :type) {:type supported-plugins
+                            :host s/Str :port s/Num
+                            (s/optional-key :migrations-index) s/Str}
+   (comp #{:zk}     :type) {:type supported-plugins
+                            :host s/Str
+                            :port s/Num
+                            :client (s/enum :curator :exhibitor)}
+   (comp #{:dt}     :type) {:type supported-plugins
+                            :host s/Str}
+   (comp #{:cass}   :type) {:type supported-plugins
+                            :hosts s/Str
+                            :keyspace s/Str}))
 
 (def JoplinConfigSchema
   {(s/optional-key :databases) {s/Any JoplinDatabaseDescriptor}
