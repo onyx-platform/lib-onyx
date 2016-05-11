@@ -1,7 +1,7 @@
-(ns lib-onyx.migrations.sql
+(ns lib-onyx.joplin
   (:require [joplin.core :as joplin]
-            [schema.core :as s]
             [onyx.schema :as os]
+            [schema.core :as s]
             [taoensso.timbre :refer [debug info warn]]))
 
 (defn get-task-map-lifecycle-config
@@ -30,7 +30,6 @@
 (def joplin-migrations
   {:lifecycle/start-task? no-pending-migrations?})
 
-                                        ;((comp #{:f} :type) {:type})
 (def supported-plugins
   (s/enum :jdbc :sql :es :zk :dt :cass))
 

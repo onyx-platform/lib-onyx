@@ -1,9 +1,10 @@
-(ns lib-onyx.migrations.sql-test
-  (:require [lib-onyx.migrations.sql :as sut]
-            [schema.core :as s]
-            [onyx.job :as oj]
-            [onyx.schema :as os]
-            [clojure.test :refer [deftest testing is]]))
+(ns lib-onyx.joplin-test
+  (:require [clojure.test :refer [deftest is testing]]
+            [lib-onyx.joplin :as sut]
+            [onyx
+             [job :as oj]
+             [schema :as os]]
+            [schema.core :as s]))
 
 (def base-job {:workflow [[:in :inc]
                           [:inc :out]]
@@ -44,7 +45,7 @@
                                                      :specialkey/mystring "hi"})
                                    (sut/with-joplin-migrations :dev sample-joplin-config)))
          [{:lifecycle/task :in
-           :lifecycle/calls :lib-onyx.migrations.sql/joplin-migrations}])))
+           :lifecycle/calls :lib-onyx.joplin/joplin-migrations}])))
 
 (deftest end-to-end-validations
   (is (oj/add-task base-job
