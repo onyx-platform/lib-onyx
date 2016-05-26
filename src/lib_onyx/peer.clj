@@ -8,7 +8,7 @@
         _ (println "Starting env")
         env (onyx.api/start-env env-config)
         _ (println "Starting peers")
-        peers (onyx.api/start-peers n-peers peer-config)]
+        peers (onyx.api/start-peers n-peers peer-group)]
     (println "Attempting to connect to Zookeeper @" (:zookeeper/address peer-config))
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread.
