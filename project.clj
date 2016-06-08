@@ -13,7 +13,7 @@
                              :sign-releases false}}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  ^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
-                 [org.onyxplatform/onyx "0.9.7-SNAPSHOT"]
+                 [org.onyxplatform/onyx "0.9.6"]
                  [prismatic/schema "1.1.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [com.stuartsierra/component "0.3.1"]
