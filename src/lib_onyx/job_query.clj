@@ -24,6 +24,12 @@
   (let [log (get-log log-subscriber)]
     (extensions/read-chunk log :catalog job-id)))
 
+(defn metadata
+  "Given a job id, returns metadata for this job."
+  [log-subscriber job-id]
+  (let [log (get-log log-subscriber)]
+    (or (extensions/read-chunk log :metadata job-id))))
+
 (defn flow-conditions
   "Given a job id, returns flow conditions for this job."
   [log-subscriber job-id]
@@ -66,6 +72,7 @@
    :lifecycles (lifecycles log-subscriber job-id)
    :windows (windows log-subscriber job-id)
    :triggers (triggers log-subscriber job-id)
+   :metadata (metadata log-subscriber job-id)
    :task-scheduler (rq/task-scheduler replica job-id)})
 
 (defn task-name 
