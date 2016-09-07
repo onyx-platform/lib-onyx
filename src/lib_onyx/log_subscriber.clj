@@ -8,15 +8,17 @@
   (thread
     (loop []
       (when-let [entry (<!! ch)]
-        (let [result (extensions/apply-log-entry entry (:replica @replica-state))
-              rep {:as-of-entry (:message-id entry)
-                   :as-of-timestamp (:created-at entry)
-                   :entry entry
-                   :replica result}]
-          (when callback-fn
-            (callback-fn sub-component rep))
-          (reset! replica-state rep)
-          (recur))))))
+        (do
+            (when-not (instance? java.lang.Throwable entry)
+                      (let [result (extensions/apply-log-entry entry (:replica @replica-state))
+                            rep {:as-of-entry     (:message-id entry)
+                                 :as-of-timestamp (:created-at entry)
+                                 :entry entry
+                                 :replica result}]
+                        (when callback-fn
+                          (callback-fn sub-component rep))
+                        (reset! replica-state rep)))
+                        (recur))))))
 
 (defrecord LogSubscriber [peer-config inbox-capacity callback-fn]
   component/Lifecycle
