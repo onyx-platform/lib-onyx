@@ -18,7 +18,7 @@
                         (when callback-fn
                           (callback-fn sub-component rep))
                         (reset! replica-state rep)))
-                        (recur))))))
+            (recur))))))
 
 (defrecord LogSubscriber [peer-config inbox-capacity callback-fn]
   component/Lifecycle
