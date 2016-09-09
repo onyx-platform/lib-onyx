@@ -2,7 +2,9 @@
   (:require [onyx.api]))
 
 (defn start-peer [n peer-config env-config]
-  (let [n-peers (or (try (Integer/parseInt 1) (catch Exception e)) n)
+  (let [n-peers (if-some [n-peers n] 
+                         (Integer/parseInt (.toString n-peers)) 
+                         1)
         _ (println "Starting peer-group")
         peer-group (onyx.api/start-peer-group peer-config)
         _ (println "Starting env")
