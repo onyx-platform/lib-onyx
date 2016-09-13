@@ -22,6 +22,7 @@
   component/Lifecycle
 
   (start [component]
+    (println "Starting LogSubscriber")
     (let [ch (chan inbox-capacity)
           {:keys [replica env]} (onyx.api/subscribe-to-log peer-config ch)
           state (atom {:as-of-entry nil
@@ -33,6 +34,7 @@
       (assoc sub-component :apply-thread apply-thread)))
 
   (stop [component]
+    (println "Stopping LogSubscriber")
     (close! (:ch component))
     (close! (:apply-thread component))
     (onyx.api/shutdown-env (:env component))))
