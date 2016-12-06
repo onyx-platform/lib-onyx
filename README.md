@@ -7,7 +7,7 @@ lib-onyx is a utilities library to make working with Onyx's extensibility featur
 On Clojars:
 
 ```
-[org.onyxplatform/lib-onyx "0.9.7.1"]
+[org.onyxplatform/lib-onyx "0.9.15.0"]
 ```
 
 ### API docs
