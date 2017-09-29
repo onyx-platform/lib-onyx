@@ -36,7 +36,7 @@
                     Use -t to supply an alternative threading mode.")
         ctx (cond-> (MediaDriver$Context.)
               threading-mode (.threadingMode threading-mode-obj)
-              delete-dirs (.dirsDeleteOnStart delete-dirs))
+              delete-dirs (.dirDeleteOnStart delete-dirs))
         media-driver (try (MediaDriver/launch ctx)
                           (catch IllegalStateException ise
                             (throw (Exception.
