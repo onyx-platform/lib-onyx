@@ -13,12 +13,12 @@
                              :sign-releases false}}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/tools.cli "0.3.5"]
-                 [com.stuartsierra/component "0.3.1"]
-                 [joplin.core "0.3.6"]
-                 [cheshire "5.5.0"]
-                 [ring-jetty-component "0.3.0"]
-                 [ring "1.4.0"]
-                 [aero "1.0.3"]]
+                 [com.stuartsierra/component "0.3.2"]
+                 [joplin.core "0.3.10"]
+                 [cheshire "5.8.0"]
+                 [ring-jetty-component "0.3.1"]
+                 [ring "1.6.3"]
+                 [aero "1.1.2"]]
   :profiles {:dev {:dependencies [^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
                                   [org.onyxplatform/onyx "0.12.0-alpha4"]
                                   [de.ubercode.clostache/clostache "1.4.0"]]
