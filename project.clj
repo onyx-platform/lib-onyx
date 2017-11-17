@@ -20,7 +20,7 @@
                  [ring "1.6.3"]
                  [aero "1.1.2"]]
   :profiles {:dev {:dependencies [^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
-                                  [org.onyxplatform/onyx "0.12.0-20171117_015551-gbc1edc8"]
+                                  [org.onyxplatform/onyx "0.12.0-20171117_023502-gbb146ad"]
                                   [de.ubercode.clostache/clostache "1.4.0"]]
                    :plugins [[codox "0.8.8"]
                              [lein-set-version "0.4.1"]
