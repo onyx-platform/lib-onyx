@@ -1,4 +1,4 @@
-(defproject org.onyxplatform/lib-onyx "0.13.5.0"
+(defproject org.onyxplatform/lib-onyx "0.13.5.1-SNAPSHOT"
   :description "A library to support additional functionality in Onyx"
   :url "https://github.com/onyx-platform/lib-onyx"
   :license {:name "Eclipse Public License"
