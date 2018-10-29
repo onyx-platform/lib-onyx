@@ -1,4 +1,4 @@
-(defproject org.onyxplatform/lib-onyx "0.13.5.1-SNAPSHOT"
+(defproject org.onyxplatform/lib-onyx "0.14.0.0"
   :description "A library to support additional functionality in Onyx"
   :url "https://github.com/onyx-platform/lib-onyx"
   :license {:name "Eclipse Public License"
@@ -20,7 +20,7 @@
                  [ring "1.6.3"]
                  [aero "1.1.2"]]
   :profiles {:dev {:dependencies [^{:voom {:repo "git@github.com:onyx-platform/onyx.git" :branch "master"}}
-                                  [org.onyxplatform/onyx "0.13.5"]
+                                  [org.onyxplatform/onyx "0.14.0"]
                                   [de.ubercode.clostache/clostache "1.4.0"]]
                    :plugins [[codox "0.8.8"]
                              [lein-set-version "0.4.1"]
